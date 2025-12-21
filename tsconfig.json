@@ -3,6 +3,14 @@
 	"compilerOptions": {
 		"allowImportingTsExtensions": true,
 		"jsx": "react-jsx",
-		"allowUnreachableCode": true
+		"allowUnreachableCode": true,
+
+		// shadcn
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
 	}
 }
