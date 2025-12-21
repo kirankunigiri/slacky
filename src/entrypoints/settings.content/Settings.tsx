@@ -1,12 +1,20 @@
+import { useValue } from '@legendapp/state/react';
+
+import { settings$ } from '@/utils/store';
+
 function Settings() {
+	const showSettingsButtonInSlack = useValue(settings$.showSettingsButtonInSlack);
+	if (!showSettingsButtonInSlack) return null;
+
 	const handleClick = async () => {
+		const errMsg = 'Failed to open popup';
 		try {
 			const response = await browser.runtime.sendMessage({ action: 'openPopup' });
 			if (!response.success) {
-				console.error('Failed to open popup:', response.error);
+				console.error(errMsg, response.error);
 			}
 		} catch (error) {
-			console.error('Failed to send message to background:', error);
+			console.error(errMsg, error);
 		}
 	};
 

@@ -7,7 +7,7 @@ export default defineContentScript({
 	main(ctx) {
 		const ui = createIntegratedUi(ctx, {
 			position: 'inline',
-			anchor: '.p-ia4_top_nav__right_container',
+			anchor: () => document.querySelector('[class$="top_nav__right_container"]'),
 			append: 'first',
 			onMount: (container) => {
 				const root = ReactDOM.createRoot(container);
