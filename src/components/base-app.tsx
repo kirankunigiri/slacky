@@ -4,10 +4,13 @@ import '@/theme/style.css';
 
 import { MantineProvider } from '@mantine/core';
 import React from 'react';
+import { scan } from 'react-scan';
 
-import App from '@/entrypoints/popup/App';
+import App from '@/components/app';
 import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
 import { shadcnTheme } from '@/theme/theme.tsx';
+
+scan({ enabled: true });
 
 export function BaseApp() {
 	return (

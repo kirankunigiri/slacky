@@ -2,7 +2,6 @@
 export default defineContentScript({
 	matches: ['*://*.slack.com/archives/*'],
 	main() {
-		// Start script after DOM is loaded
 		if (document.body) {
 			startMonitoring();
 		} else {
@@ -35,6 +34,11 @@ const startMonitoring = () => {
 
 /** Finds the browser Slack link and navigates to it */
 const findAndOpenBrowserSlackLink = () => {
+	// Check if setting is enabled
+	const openSlackLinksInBrowser = settings$.openSlackLinksInBrowser.get();
+	if (!openSlackLinksInBrowser) return false;
+
+	// Find and open browser link
 	const links = document.querySelectorAll('a.c-link[target="_self"]');
 	for (const link of links) {
 		if (link.getAttribute('href')?.startsWith('/messages/')) {

@@ -1,4 +1,9 @@
 :root {
+	display: flex;
+	justify-content: center;
+}
+
+body {
 	min-width: 340px;
 	max-width: 340px;
 	margin: 0 auto;

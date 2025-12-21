@@ -1,9 +1,7 @@
 import { observable } from '@legendapp/state';
-import { syncObservable } from '@legendapp/state/sync';
+import { synced } from '@legendapp/state/sync';
 
-import { ObservablePersistWXTStorage } from './storage-plugin';
-
-/** Settings stored in Chrome sync storage */
+/** Settings stored in Chrome storage */
 interface Settings {
 	removeAllEmbedLinks: boolean
 	openSlackLinksInBrowser: boolean
@@ -19,12 +17,35 @@ const defaultSettings: Settings = {
 	showSettingsButtonInSlack: true,
 	embedLinkFilters: [],
 };
-export const settings$ = observable<Settings>(defaultSettings);
 
-/** Persist the settings observable to WXT chrome sync storage */
-syncObservable(settings$, {
-	persist: {
-		name: 'settings',
-		plugin: new ObservablePersistWXTStorage(),
-	},
-});
+const STORAGE_KEY = 'local:settings' as const;
+
+export const settings$ = observable<Settings>(
+	synced({
+		initial: defaultSettings,
+
+		// Get settings from WXT storage
+		get: async () => {
+			const value = await storage.getItem(STORAGE_KEY);
+			if (value) {
+				try {
+					return JSON.parse(value as string) as Settings;
+				} catch {
+					return defaultSettings;
+				}
+			}
+			return defaultSettings;
+		},
+
+		// Save settings to WXT storage
+		set: async ({ value }) => {
+			await storage.setItem(STORAGE_KEY, JSON.stringify(value));
+		},
+
+		// Subscribe to changes from other tabs using WXT storage.watch
+		// refresh() re-runs get() to fetch latest
+		subscribe: ({ refresh }) => {
+			return storage.watch<string>(STORAGE_KEY, () => refresh());
+		},
+	}),
+);
