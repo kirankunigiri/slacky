@@ -2,7 +2,7 @@ import { useValue } from '@legendapp/state/react';
 import { ActionIcon, Badge, Button, Checkbox, Divider, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
 
-import { AnimatedLogo } from '@/entrypoints/popup/lib/animated-logo';
+import { AnimatedLogo } from '@/components/animated-logo';
 import { settings$ } from '@/utils/store';
 
 function App() {
@@ -79,11 +79,10 @@ function App() {
 							</Button>
 						</Tooltip>
 					</div>
+					<div className="h-1"></div>
 
 					{/* Domain Filter Section - Hidden when auto-remove is enabled */}
 					<div className={`overflow-hidden transition-all duration-300 ${removeAllEmbedLinks ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'}`}>
-						<div className="h-2"></div>
-
 						{/* Domain Filter List v2 */}
 						<div className="flex flex-col">
 							{embedLinkFilters.map((filter, index) => (
@@ -115,7 +114,7 @@ function App() {
 
 				</div>
 
-				<Space h="md" />
+				<Space h="sm" />
 				<Divider className="mt-1 mb-2" variant="dashed" />
 
 				<div className="flex flex-col gap-1">
@@ -123,30 +122,24 @@ function App() {
 					<div className="h-1"></div>
 					<div className="flex items-center space-x-2">
 						<div className="flex flex-col gap-3">
-							<div className="flex items-center gap-2">
-								<Checkbox
-									label="Show settings button in Slack"
-									id="terms"
-									checked={showSettingsButtonInSlack}
-									onChange={e => settings$.showSettingsButtonInSlack.set(e.target.checked)}
-								/>
-							</div>
-							<div className="flex items-center gap-2">
-								<Checkbox
-									label="Open Slack links in browser"
-									id="openSlackLinksInBrowser"
-									checked={openSlackLinksInBrowser}
-									onChange={e => settings$.openSlackLinksInBrowser.set(e.target.checked)}
-								/>
-							</div>
-							<div className="flex items-center gap-2">
-								<Checkbox
-									label="Auto-confirm embed removal"
-									id="autoConfirmEmbedRemoval"
-									checked={autoConfirmEmbedRemoval}
-									onChange={e => settings$.autoConfirmEmbedRemoval.set(e.target.checked)}
-								/>
-							</div>
+							<Checkbox
+								label="Open Slack links in browser"
+								id="openSlackLinksInBrowser"
+								checked={openSlackLinksInBrowser}
+								onChange={e => settings$.openSlackLinksInBrowser.set(e.target.checked)}
+							/>
+							<Checkbox
+								label="Auto-confirm embed removal"
+								id="autoConfirmEmbedRemoval"
+								checked={autoConfirmEmbedRemoval}
+								onChange={e => settings$.autoConfirmEmbedRemoval.set(e.target.checked)}
+							/>
+							<Checkbox
+								label="Show settings button in Slack"
+								id="terms"
+								checked={showSettingsButtonInSlack}
+								onChange={e => settings$.showSettingsButtonInSlack.set(e.target.checked)}
+							/>
 						</div>
 					</div>
 				</div>

@@ -15,8 +15,8 @@ interface Settings {
 const defaultSettings: Settings = {
 	removeAllEmbedLinks: false,
 	openSlackLinksInBrowser: false,
-	autoConfirmEmbedRemoval: false,
-	showSettingsButtonInSlack: false,
+	autoConfirmEmbedRemoval: true,
+	showSettingsButtonInSlack: true,
 	embedLinkFilters: [],
 };
 export const settings$ = observable<Settings>(defaultSettings);
