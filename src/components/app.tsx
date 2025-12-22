@@ -1,11 +1,22 @@
+import { syncState } from '@legendapp/state';
 import { Memo, useValue } from '@legendapp/state/react';
 import { ActionIcon, Badge, Button, Checkbox, Divider, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useRef } from 'react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
 import { settings$ } from '@/utils/store';
 
 function App() {
+	// Hide app until settings are loaded to prevent flicker/jank with default values being used first
+	const state$ = syncState(settings$);
+	const isLoaded = useValue(state$.isLoaded);
+	if (!isLoaded) {
+		settings$.get();
+		return null;
+	}
+
 	return (
 		<div className="flex flex-col gap-2 p-4">
 			<Header />
@@ -43,9 +54,17 @@ function App() {
 	);
 }
 
+let filterIdCounter = 0;
+
 function EmbedLinkSettings() {
 	const removeAllEmbedLinks = useValue(settings$.removeAllEmbedLinks);
 	const embedLinkFilters = useValue(settings$.embedLinkFilters);
+
+	// Track stable IDs for each filter (needed for proper exit animations)
+	const filterIdsRef = useRef<number[]>([]);
+	while (filterIdsRef.current.length < embedLinkFilters.length) {
+		filterIdsRef.current.push(filterIdCounter++);
+	}
 
 	const addFilter = () => {
 		settings$.removeAllEmbedLinks.set(false);
@@ -58,6 +77,7 @@ function EmbedLinkSettings() {
 	};
 
 	const removeFilter = (index: number) => {
+		filterIdsRef.current.splice(index, 1);
 		const newFilters = settings$.embedLinkFilters.get().filter((_, i) => i !== index);
 		settings$.embedLinkFilters.set(newFilters);
 	};
@@ -99,35 +119,51 @@ function EmbedLinkSettings() {
 			<div className="h-1"></div>
 
 			{/* Domain Filter Section - Hidden when auto-remove is enabled */}
-			<div className={`overflow-hidden transition-all duration-300 ${removeAllEmbedLinks ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'}`}>
-				{/* Domain Filter List v2 */}
-				<div className="flex flex-col">
-					{embedLinkFilters.map((filter, index) => (
-						<div
-							key={index}
-							className="group flex animate-in items-center overflow-hidden border border-t-0 border-black/10 bg-black/3 transition-all duration-300 fade-in slide-in-from-left-4 first:rounded-t-lg first:border-t last:rounded-b-lg hover:bg-black/8 dark:border-white/10 dark:bg-white/5 hover:dark:bg-white/8"
-						>
-							<TextInput
-								variant="unstyled"
-								value={filter}
-								onChange={e => updateFilter(index, e.target.value)}
-								placeholder="Domain (ex: github.com)"
-								className="w-full px-3"
-							/>
-							<ActionIcon
-								className="mr-2 p-2 opacity-0 transition-opacity group-hover:opacity-100"
-								onClick={() => removeFilter(index)}
-								color="red"
-								size="sm"
-								aria-label="Settings"
-								variant="subtle"
-							>
-								<TrashIcon className="size-3" />
-							</ActionIcon>
+			<AnimatePresence initial={false}>
+				{!removeAllEmbedLinks && (
+					<motion.div
+						initial={{ height: 0, opacity: 0 }}
+						animate={{ height: 'auto', opacity: 1 }}
+						exit={{ height: 0, opacity: 0 }}
+						transition={{ duration: 0.2, ease: 'easeOut' }}
+						className="overflow-hidden"
+					>
+						{/* Domain Filter List v2 */}
+						<div className="flex flex-col">
+							<AnimatePresence initial={false}>
+								{embedLinkFilters.map((filter, index) => (
+									<motion.div
+										key={filterIdsRef.current[index]}
+										initial={{ opacity: 0, x: -36, height: 0 }}
+										animate={{ opacity: 1, x: 0, height: 'auto' }}
+										exit={{ opacity: 0, x: 16, height: 0 }}
+										transition={{ duration: 0.15, ease: 'easeOut' }}
+										className="group flex items-center overflow-hidden border border-t-0 border-black/10 bg-black/3 first:rounded-t-lg first:border-t last:rounded-b-lg hover:bg-black/8 dark:border-white/10 dark:bg-white/5 hover:dark:bg-white/8"
+									>
+										<TextInput
+											variant="unstyled"
+											value={filter}
+											onChange={e => updateFilter(index, e.target.value)}
+											placeholder="Domain (ex: github.com)"
+											className="w-full px-3"
+										/>
+										<ActionIcon
+											className="mr-2 p-2 opacity-0 transition-opacity group-hover:opacity-100"
+											onClick={() => removeFilter(index)}
+											color="red"
+											size="sm"
+											aria-label="Settings"
+											variant="subtle"
+										>
+											<TrashIcon className="size-3" />
+										</ActionIcon>
+									</motion.div>
+								))}
+							</AnimatePresence>
 						</div>
-					))}
-				</div>
-			</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }
