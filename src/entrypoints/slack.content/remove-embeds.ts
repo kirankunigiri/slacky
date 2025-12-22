@@ -1,24 +1,43 @@
-export const removeSlackAttachments = () => {
-	// Function to click a delete button
-	function clickDeleteButton(deleteButton: HTMLButtonElement) {
-		console.log('Found delete button, clicking...');
-		deleteButton.click();
+import { settings$ } from '@/utils/store';
+
+/** Removes embed links from Slack messages */
+export const removeEmbeds = () => {
+	// Function to process a message attachment and delete if it contains a GitHub link
+	async function processAttachment(attachment: Element) {
+		// Find the first link inside the attachment
+		const link = attachment.querySelector('a');
+		if (!link) return;
+
+		const href = link.getAttribute('href') || '';
+		await loadSettings();
+		const removeAllEmbedLinks = settings$.removeAllEmbedLinks.get();
+		const embedLinkFilters = settings$.embedLinkFilters.get();
+
+		if (!removeAllEmbedLinks && !embedLinkFilters.some(filter => href.toLowerCase().includes(filter.toLowerCase()))) {
+			return;
+		}
+
+		// Find the delete button inside this attachment
+		const deleteButton = attachment.querySelector('.c-message_attachment__delete') as HTMLButtonElement | null;
+		if (deleteButton) {
+			deleteButton.click();
+		}
 	}
 
 	// Function to click the confirmation Remove button in modal
 	function clickConfirmButton(confirmButton: HTMLButtonElement) {
-		console.log('Found confirmation Remove button, clicking...');
-		confirmButton.click();
+		if (settings$.autoConfirmEmbedRemoval.get()) {
+			confirmButton.click();
+		}
 	}
 
-	// Check all existing delete buttons on page load
-	function checkExistingDeleteButtons() {
-		const existingButtons = document.querySelectorAll('.c-message_attachment__delete') as NodeListOf<HTMLButtonElement>;
-		existingButtons.forEach(clickDeleteButton);
-		console.log(`Clicked ${existingButtons.length} existing delete buttons.`);
+	// Check all existing attachments on page load
+	function checkExistingAttachments() {
+		const existingAttachments = document.querySelectorAll('.c-message_attachment');
+		existingAttachments.forEach(processAttachment);
 	}
 
-	// Set up MutationObserver to watch for new delete buttons and confirmation modals
+	// Set up MutationObserver to watch for new attachments and confirmation modals
 	const observer = new MutationObserver((mutations) => {
 		mutations.forEach((mutation) => {
 			mutation.addedNodes.forEach((node) => {
@@ -26,9 +45,9 @@ export const removeSlackAttachments = () => {
 				if (node.nodeType === Node.ELEMENT_NODE) {
 					const element = node as Element;
 
-					// Check if it's a delete button itself
-					if (element.classList?.contains('c-message_attachment__delete')) {
-						clickDeleteButton(element as HTMLButtonElement);
+					// Check if it's an attachment itself
+					if (element.classList?.contains('c-message_attachment')) {
+						processAttachment(element);
 					}
 
 					// Check if it's the confirmation button itself
@@ -36,9 +55,9 @@ export const removeSlackAttachments = () => {
 						clickConfirmButton(element as HTMLButtonElement);
 					}
 
-					// Also check for delete buttons within the added node
-					const deleteButtons = element.querySelectorAll?.('.c-message_attachment__delete') as NodeListOf<HTMLButtonElement>;
-					deleteButtons?.forEach(clickDeleteButton);
+					// Also check for attachments within the added node
+					const attachments = element.querySelectorAll?.('.c-message_attachment');
+					attachments?.forEach(processAttachment);
 
 					// Also check for confirmation buttons within the added node
 					const confirmButtons = element.querySelectorAll?.('[data-qa="dialog_go"]') as NodeListOf<HTMLButtonElement>;
@@ -50,21 +69,19 @@ export const removeSlackAttachments = () => {
 
 	// Start observing when DOM is ready
 	if (document.body) {
-		checkExistingDeleteButtons();
+		checkExistingAttachments();
 		observer.observe(document.body, {
 			childList: true,
 			subtree: true,
 		});
-		console.log('MutationObserver started - watching for delete buttons and confirmation modals.');
 	} else {
 		// If body isn't ready yet, wait for it
 		document.addEventListener('DOMContentLoaded', () => {
-			checkExistingDeleteButtons();
+			checkExistingAttachments();
 			observer.observe(document.body, {
 				childList: true,
 				subtree: true,
 			});
-			console.log('MutationObserver started after DOMContentLoaded - watching for delete buttons and confirmation modals.');
 		});
 	}
 };

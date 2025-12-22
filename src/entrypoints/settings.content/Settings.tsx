@@ -21,6 +21,7 @@ function Settings() {
 	return (
 		<button
 			style={{ marginRight: '4px' }}
+			// eslint-disable-next-line better-tailwindcss/no-unregistered-classes
 			className="c-button-unstyled p-top_nav__button p-top_nav__help"
 			data-qa="highlight-btn"
 			aria-label="Slacky Settings"

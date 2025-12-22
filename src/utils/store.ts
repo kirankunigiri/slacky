@@ -1,4 +1,4 @@
-import { observable } from '@legendapp/state';
+import { observable, syncState, when } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 
 /** Settings stored in Chrome storage */
@@ -49,3 +49,9 @@ export const settings$ = observable<Settings>(
 		},
 	}),
 );
+
+export const loadSettings = async () => {
+	settings$.get();
+	const status$ = syncState(settings$);
+	await when(status$.isLoaded);
+};

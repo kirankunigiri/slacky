@@ -18,3 +18,10 @@ bun dev
 
 ### Mantine
 Used [MantineHub](https://github.com/RubixCube-Innovations/mantine-theme-builder) Shadcn theme as a base.
+
+### State
+Legend State + WXT Storage
+A custom observable is defined with Legend State that automatically updates and reacts to changes using WXT storage.
+Because storage is async, you must ensure that settings are loaded first before using, or the default values get used.
+- In react, see the example at the top of app.tsx on how loading state is observed
+- Outside react, call `loadSettings` from `store.ts` before using the settings store

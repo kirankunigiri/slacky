@@ -11,13 +11,13 @@ export default defineContentScript({
 });
 
 /** Observes for the browser Slack link appearing and navigates to it */
-const startMonitoring = () => {
-	if (findAndOpenBrowserSlackLink()) return;
+const startMonitoring = async () => {
+	if (await findAndOpenBrowserSlackLink()) return;
 
-	const observer = new MutationObserver((mutations) => {
+	const observer = new MutationObserver(async (mutations) => {
 		for (const mutation of mutations) {
 			if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-				if (findAndOpenBrowserSlackLink()) {
+				if (await findAndOpenBrowserSlackLink()) {
 					observer.disconnect();
 					return;
 				}
@@ -33,8 +33,9 @@ const startMonitoring = () => {
 };
 
 /** Finds the browser Slack link and navigates to it */
-const findAndOpenBrowserSlackLink = () => {
+const findAndOpenBrowserSlackLink = async () => {
 	// Check if setting is enabled
+	await loadSettings();
 	const openSlackLinksInBrowser = settings$.openSlackLinksInBrowser.get();
 	if (!openSlackLinksInBrowser) return false;
 

@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client';
 
 import Settings from '@/entrypoints/settings.content/Settings';
 
+/** Adds the Slacky Settings button to the top right navbar in Slack */
 export default defineContentScript({
 	matches: ['*://*.slack.com/*'],
 	main(ctx) {
