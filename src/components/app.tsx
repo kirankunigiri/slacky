@@ -7,7 +7,7 @@ import { settings$ } from '@/utils/store';
 
 function App() {
 	return (
-		<div className="p-4 flex flex-col gap-2">
+		<div className="flex flex-col gap-2 p-4">
 			<Header />
 
 			{/* Remove Embed Links */}
@@ -32,8 +32,8 @@ function App() {
 					rel="noreferrer"
 					className="group"
 				>
-					<p className="flex-1 text-right opacity-60 inline-block cursor-pointer relative
-							after:content-[''] after:block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-gray-300 dark:after:bg-gray-600 after:scale-x-0 after:transition-transform after:duration-200 group-hover:after:scale-x-100 after:origin-left"
+					<p className="relative inline-block flex-1 cursor-pointer text-right opacity-60
+							after:absolute after:bottom-0 after:left-0 after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-gray-300 after:transition-transform after:duration-200 after:content-[''] group-hover:after:scale-x-100 dark:after:bg-gray-600"
 					>
 						v1.0 by Kiran Kunigiri
 					</p>
@@ -89,7 +89,7 @@ function EmbedLinkSettings() {
 						onClick={addFilter}
 						disabled={embedLinkFilters.some(f => f === '')}
 					>
-						<div className="flex gap-1 items-center">
+						<div className="flex items-center gap-1">
 							<PlusIcon size={16} />
 							Domain Filter
 						</div>
@@ -105,17 +105,17 @@ function EmbedLinkSettings() {
 					{embedLinkFilters.map((filter, index) => (
 						<div
 							key={index}
-							className="flex items-center border border-white/10 border-t-0 first:border-t overflow-hidden group dark:bg-input/5 hover:dark:bg-input/10 transition-all duration-300 animate-in slide-in-from-left-4 fade-in first:rounded-t-lg last:rounded-b-lg"
+							className="group flex animate-in items-center overflow-hidden border border-t-0 border-black/10 bg-black/3 transition-all duration-300 fade-in slide-in-from-left-4 first:rounded-t-lg first:border-t last:rounded-b-lg hover:bg-black/8 dark:border-white/10 dark:bg-white/5 hover:dark:bg-white/8"
 						>
 							<TextInput
 								variant="unstyled"
 								value={filter}
 								onChange={e => updateFilter(index, e.target.value)}
 								placeholder="Domain (ex: github.com)"
-								className="px-3 w-full"
+								className="w-full px-3"
 							/>
 							<ActionIcon
-								className="opacity-0 group-hover:opacity-100 transition-opacity mr-2 p-2"
+								className="mr-2 p-2 opacity-0 transition-opacity group-hover:opacity-100"
 								onClick={() => removeFilter(index)}
 								color="red"
 								size="sm"

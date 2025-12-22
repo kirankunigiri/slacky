@@ -1,6 +1,8 @@
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import { defineConfig } from 'eslint/config';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import eslintPluginJsonc from 'eslint-plugin-jsonc';
 import pluginReactConfig from 'eslint-plugin-react';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
@@ -13,6 +15,17 @@ import autoImports from './.wxt/eslint-auto-imports.mjs';
 export default defineConfig(
 	eslint.configs.recommended,
 	autoImports, // WXT configuration
+
+	// TypeScript parser configuration
+	{
+		files: ['**/*.{ts,tsx}'],
+		languageOptions: {
+			parser: tsParser,
+			parserOptions: {
+				project: true,
+			},
+		},
+	},
 
 	// JavaScript and TypeScript configuration
 	{
@@ -108,6 +121,30 @@ export default defineConfig(
 					order: { type: 'asc' },
 				},
 			],
+		},
+	},
+
+	// TailwindCSS configuration
+	{
+		files: ['**/*.{jsx,tsx}'],
+		languageOptions: {
+			parserOptions: {
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
+		},
+		plugins: {
+			'better-tailwindcss': betterTailwindcss,
+		},
+		rules: {
+			...betterTailwindcss.configs['recommended-warn'].rules,
+			'better-tailwindcss/enforce-consistent-line-wrapping': ['off'],
+		},
+		settings: {
+			'better-tailwindcss': {
+				entryPoint: 'src/assets/tailwind.css',
+			},
 		},
 	},
 );
