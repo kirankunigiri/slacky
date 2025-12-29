@@ -1,5 +1,3 @@
-import 'non.geist';
-
 import {
 	ActionIcon,
 	Alert,
@@ -109,7 +107,7 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
 	primaryShade: { light: 8, dark: 0 },
 	autoContrast: true,
 	luminanceThreshold: 0.3,
-	fontFamily: 'Geist-Variable',
+	fontFamily: '"Geist", sans-serif',
 	radius: {
 		xs: rem('6px'),
 		sm: rem('8px'),
@@ -150,7 +148,7 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
 	},
 
 	headings: {
-		fontFamily: 'Geist-Variable',
+		fontFamily: '"Geist", sans-serif',
 		sizes: {
 			h1: {
 				fontSize: rem('36px'),
