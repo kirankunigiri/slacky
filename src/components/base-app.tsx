@@ -2,14 +2,13 @@ import { MantineProvider } from '@mantine/core';
 import React from 'react';
 import { scan } from 'react-scan'; // TODO: conditionally import
 
-import App from '@/components/app';
 import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
 import { shadcnTheme } from '@/theme/theme.tsx';
 import { AnalyticsProvider } from '@/utils/analytics';
 
 scan({ enabled: import.meta.env.MODE === 'development' });
 
-export function BaseApp() {
+export function BaseApp({ children }: { children: React.ReactNode }) {
 	return (
 		<React.StrictMode>
 			<AnalyticsProvider>
@@ -18,7 +17,7 @@ export function BaseApp() {
 					theme={shadcnTheme}
 					cssVariablesResolver={shadcnCssVariableResolver}
 				>
-					<App />
+					{children}
 				</MantineProvider>
 			</AnalyticsProvider>
 		</React.StrictMode>

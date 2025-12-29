@@ -3,7 +3,7 @@ import { Memo, useValue } from '@legendapp/state/react';
 import { ActionIcon, Badge, Button, Checkbox, Divider, ScrollArea, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
 import { settings$ } from '@/utils/store';
@@ -17,42 +17,68 @@ function App() {
 		return null;
 	}
 
-	return (
-		<ScrollArea h={500}>
-			<div className="flex flex-col gap-2 p-4">
-				<Header />
-
-				{/* Remove Embed Links */}
-				<Divider className="mt-1 mb-2" variant="dashed" />
-				<EmbedLinkSettings />
-
-				<Space h="sm" />
-				<Divider className="mt-1 mb-2" variant="dashed" />
-
-				{/* Other Settings */}
-				<OtherSettings />
-
-				{/* Credit Section */}
-				<Space h="md" />
-				<Divider className="mt-5 mb-1" variant="dashed" />
-				<div className="flex justify-around text-sm">
-					<Badge variant="dot" color="blue">View tutorial</Badge>
-					<div className="flex-1"></div>
-					<a
-						href="https://github.com/kirankunigiri"
-						target="_blank"
-						rel="noreferrer"
-						className="group"
-					>
-						<p className="relative inline-block flex-1 cursor-pointer text-right opacity-60
-							after:absolute after:bottom-0 after:left-0 after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-gray-300 after:transition-transform after:duration-200 after:content-[''] group-hover:after:scale-x-100 dark:after:bg-gray-600"
-						>
-							v1.0 by Kiran Kunigiri
-						</p>
-					</a>
-				</div>
+	const isPopup = window.location.pathname.endsWith('popup.html');
+	if (isPopup) {
+		return (
+			<div className="h-[500px] max-h-[500px] overflow-hidden">
+				<AppContent />
 			</div>
-		</ScrollArea>
+		);
+	}
+
+	return <AppContent />;
+}
+
+function AppContent() {
+	return (
+		<div className="flex h-full flex-col">
+			<Header />
+			<Divider className="mx-5" variant="dashed" />
+
+			<div className="relative min-h-0 flex-1">
+				<ScrollArea
+					scrollbarSize={6}
+					offsetScrollbars
+					classNames={{
+						viewport: 'scroll-shadow',
+					}}
+					className="mr-0.5 h-full"
+				>
+					<div className="px-5">
+						{/* Remove Embed Links */}
+						<Space h="sm" />
+						<EmbedLinkSettings />
+
+						<Space h="md" />
+						<Divider className="px-5" variant="dashed" />
+
+						{/* Other Settings */}
+						<Space h="sm" />
+						<OtherSettings />
+					</div>
+				</ScrollArea>
+			</div>
+
+			{/* Footer */}
+			{/* <Space h="md" /> */}
+			<Divider className="mx-5" variant="dashed" />
+			<div className="flex justify-around px-5 py-3 text-sm">
+				<Badge variant="dot" color="blue">View tutorial</Badge>
+				<div className="flex-1"></div>
+				<a
+					href="https://github.com/kirankunigiri"
+					target="_blank"
+					rel="noreferrer"
+					className="group"
+				>
+					<p className="relative inline-block flex-1 cursor-pointer text-right opacity-60
+							after:absolute after:bottom-0 after:left-0 after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-gray-300 after:transition-transform after:duration-200 after:content-[''] group-hover:after:scale-x-100 dark:after:bg-gray-600"
+					>
+						v1.0 by Kiran Kunigiri
+					</p>
+				</a>
+			</div>
+		</div>
 	);
 }
 
@@ -118,7 +144,6 @@ function EmbedLinkSettings() {
 					</Button>
 				</Tooltip>
 			</div>
-			<div className="h-1"></div>
 
 			{/* Domain Filter Section - Hidden when auto-remove is enabled */}
 			<AnimatePresence initial={false}>
@@ -131,6 +156,7 @@ function EmbedLinkSettings() {
 						className="overflow-hidden"
 					>
 						{/* Domain Filter List v2 */}
+						<Space h={7} />
 						<div className="flex flex-col">
 							<AnimatePresence initial={false}>
 								{embedLinkFilters.map((filter, index) => (
@@ -207,6 +233,7 @@ function OtherSettings() {
 							/>
 						)}
 					</Memo>
+					<Space h="xs" />
 				</div>
 			</div>
 		</div>
@@ -217,7 +244,7 @@ function Header() {
 	const { toggleColorScheme, colorScheme } = useMantineColorScheme();
 
 	return (
-		<div className="flex items-center gap-1">
+		<div className="flex items-center gap-1 px-5 pt-3 pb-3">
 			<AnimatedLogo />
 			<p className="text-xl font-bold">Slacky</p>
 			<a
