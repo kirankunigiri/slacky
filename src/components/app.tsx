@@ -3,7 +3,7 @@ import { Memo, useValue } from '@legendapp/state/react';
 import { ActionIcon, Badge, Button, Checkbox, Divider, ScrollArea, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
 import { settings$ } from '@/utils/store';
@@ -83,6 +83,7 @@ function AppContent() {
 }
 
 let filterIdCounter = 0;
+const MAX_DOMAIN_FILTERS = 30;
 
 function EmbedLinkSettings() {
 	const removeAllEmbedLinks = useValue(settings$.removeAllEmbedLinks);
@@ -94,7 +95,10 @@ function EmbedLinkSettings() {
 		filterIdsRef.current.push(filterIdCounter++);
 	}
 
+	const canAddFilter = embedLinkFilters.length < MAX_DOMAIN_FILTERS;
+
 	const addFilter = () => {
+		if (!canAddFilter) return;
 		settings$.removeAllEmbedLinks.set(false);
 		const hasEmpty = settings$.embedLinkFilters.get().some(f => f === '');
 		if (hasEmpty) {
@@ -130,12 +134,12 @@ function EmbedLinkSettings() {
 					checked={removeAllEmbedLinks}
 					onChange={e => settings$.removeAllEmbedLinks.set(e.target.checked)}
 				/>
-				<Tooltip label="Only embed links from these domains will be automatically removed.">
+				<Tooltip label={!canAddFilter ? `You cannot add more than ${MAX_DOMAIN_FILTERS} domain filters` : 'Only embed links from these domains will be automatically removed.'}>
 					<Button
 						variant="light"
 						size="compact-xs"
 						onClick={addFilter}
-						disabled={embedLinkFilters.some(f => f === '')}
+						disabled={!canAddFilter || embedLinkFilters.some(f => f === '')}
 					>
 						<div className="flex items-center gap-1">
 							<PlusIcon size={16} />
