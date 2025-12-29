@@ -14,7 +14,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 /** React provider for PostHog */
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-	if (import.meta.env.MODE === 'development' && import.meta.env.VITE_DEV_ENABLE_ANALYTICS !== 'true') {
+	if (import.meta.env.DEV && import.meta.env.VITE_DEV_ENABLE_ANALYTICS !== 'true') {
 		console.log('Analytics disabled in development');
 		return children;
 	}
@@ -38,7 +38,7 @@ type PostHogClientType = 'ui' | 'background';
 const basePostHogOptions: Partial<PostHogConfig> = {
 	api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
 	defaults: '2025-11-30',
-	debug: import.meta.env.MODE === 'development' && import.meta.env.VITE_DEV_ANALYTICS_LOGGING === 'true',
+	debug: import.meta.env.DEV && import.meta.env.VITE_DEV_ENABLE_ANALYTICS_LOGGING === 'true',
 	disable_external_dependency_loading: true,
 	persistence: 'localStorage',
 	disable_surveys: true,
