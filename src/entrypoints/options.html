@@ -5,7 +5,8 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Slacky Settings</title>
-	<meta name="manifest.type" content="browser_action" />
+	<meta name="manifest.open_in_tab" content="true" />
+
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
@@ -15,14 +16,14 @@
 			document.documentElement.setAttribute('data-mantine-color-scheme', scheme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : scheme);
 		})();
 	</script>
-	<link rel="stylesheet" href="../../assets/index.css" />
-	<link rel="stylesheet" href="../../assets/tailwind.css" />
-	<link rel="stylesheet" href="../../theme/style.css" />
+	<link rel="stylesheet" href="../assets/index.css" />
+	<link rel="stylesheet" href="../assets/tailwind.css" />
+	<link rel="stylesheet" href="../theme/style.css" />
 </head>
 
 <body>
 	<div id="root"></div>
-	<script type="module" src="./main.tsx"></script>
+	<script type="module" src="../components/main.tsx"></script>
 </body>
 
 </html>

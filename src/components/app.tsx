@@ -222,7 +222,7 @@ function Header() {
 			<p className="text-xl font-bold">Slacky</p>
 			<a
 				className="ml-2"
-				href={`chrome-extension://${browser.runtime.id}/devpage.html`}
+				href={`chrome-extension://${browser.runtime.id}/options.html`}
 				target="_blank"
 				rel="noreferrer"
 			>
