@@ -4,8 +4,10 @@
 }
 
 body {
-	min-width: 340px;
-	max-width: 340px;
+	min-width: 340px !important;
+	max-width: 340px !important;
+	min-height: 500px !important;
+	max-height: 500px !important;
 	margin: 0 auto;
 	--font-size-xs: 2rem !important;
 }

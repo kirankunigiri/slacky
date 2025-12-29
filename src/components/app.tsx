@@ -1,6 +1,6 @@
 import { syncState } from '@legendapp/state';
 import { Memo, useValue } from '@legendapp/state/react';
-import { ActionIcon, Badge, Button, Checkbox, Divider, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, Badge, Button, Checkbox, Divider, ScrollArea, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef } from 'react';
@@ -18,39 +18,41 @@ function App() {
 	}
 
 	return (
-		<div className="flex flex-col gap-2 p-4">
-			<Header />
+		<ScrollArea h={500}>
+			<div className="flex flex-col gap-2 p-4">
+				<Header />
 
-			{/* Remove Embed Links */}
-			<Divider className="mt-1 mb-2" variant="dashed" />
-			<EmbedLinkSettings />
+				{/* Remove Embed Links */}
+				<Divider className="mt-1 mb-2" variant="dashed" />
+				<EmbedLinkSettings />
 
-			<Space h="sm" />
-			<Divider className="mt-1 mb-2" variant="dashed" />
+				<Space h="sm" />
+				<Divider className="mt-1 mb-2" variant="dashed" />
 
-			{/* Other Settings */}
-			<OtherSettings />
+				{/* Other Settings */}
+				<OtherSettings />
 
-			{/* Credit Section */}
-			<Space h="md" />
-			<Divider className="mt-5 mb-1" variant="dashed" />
-			<div className="flex justify-around text-sm">
-				<Badge variant="dot" color="blue">View tutorial</Badge>
-				<div className="flex-1"></div>
-				<a
-					href="https://github.com/kirankunigiri"
-					target="_blank"
-					rel="noreferrer"
-					className="group"
-				>
-					<p className="relative inline-block flex-1 cursor-pointer text-right opacity-60
-							after:absolute after:bottom-0 after:left-0 after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-gray-300 after:transition-transform after:duration-200 after:content-[''] group-hover:after:scale-x-100 dark:after:bg-gray-600"
+				{/* Credit Section */}
+				<Space h="md" />
+				<Divider className="mt-5 mb-1" variant="dashed" />
+				<div className="flex justify-around text-sm">
+					<Badge variant="dot" color="blue">View tutorial</Badge>
+					<div className="flex-1"></div>
+					<a
+						href="https://github.com/kirankunigiri"
+						target="_blank"
+						rel="noreferrer"
+						className="group"
 					>
-						v1.0 by Kiran Kunigiri
-					</p>
-				</a>
+						<p className="relative inline-block flex-1 cursor-pointer text-right opacity-60
+							after:absolute after:bottom-0 after:left-0 after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-gray-300 after:transition-transform after:duration-200 after:content-[''] group-hover:after:scale-x-100 dark:after:bg-gray-600"
+						>
+							v1.0 by Kiran Kunigiri
+						</p>
+					</a>
+				</div>
 			</div>
-		</div>
+		</ScrollArea>
 	);
 }
 
@@ -224,7 +226,10 @@ function Header() {
 				target="_blank"
 				rel="noreferrer"
 			>
-				<Badge variant="outline">{import.meta.env.MODE}</Badge>
+				<Badge variant="outline">dev</Badge>
+				{/* {import.meta.env.MODE === 'development' && (
+					<Badge variant="outline">dev</Badge>
+				)} */}
 			</a>
 
 			{/* Devtools */}

@@ -12,7 +12,8 @@
 		"zip": "wxt zip",
 		"zip:firefox": "wxt zip -b firefox",
 		"compile": "tsc --noEmit",
-		"postinstall": "wxt prepare"
+		"postinstall": "wxt prepare",
+		"sync-env": "doppler -p slacky -c dev secrets download --no-file --format env | tee .env > /dev/null"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.0.0",
@@ -31,6 +32,7 @@
 		"motion": "^12.23.26",
 		"next-themes": "^0.4.6",
 		"non.geist": "^2.0.1",
+		"posthog-js": "^1.310.0",
 		"react": "^19.1.1",
 		"react-day-picker": "^9.13.0",
 		"react-dom": "^19.1.1",
@@ -40,6 +42,7 @@
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.4.0",
 		"tailwindcss": "^4.1.18",
+		"uuid": "^13.0.0",
 		"vaul": "^1.1.2"
 	},
 	"devDependencies": {
