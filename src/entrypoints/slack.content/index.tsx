@@ -1,10 +1,16 @@
-import { ExportMessagesButton } from '@/entrypoints/copy.content/copy';
-import { injectComponent } from '@/utils/injector';
+import { ExportMessagesButton } from '@/entrypoints/slack.content/export-btn';
+import { removeEmbeds } from '@/entrypoints/slack.content/remove-embeds';
+import SettingsButton from '@/entrypoints/slack.content/settings-btn';
 
-/** Adds buttons to copy all messages in a channel/thread in the toolbar */
 export default defineContentScript({
 	matches: ['*://*.slack.com/*'],
 	main() {
+		console.log('slack.content content script loaded.');
+
+		// Remove embeds
+		removeEmbeds();
+
+		// Export buttons
 		injectComponent({
 			parentSelector: '.p-view_header__actions',
 			componentId: 'slacky-export-channel-messages',
@@ -17,6 +23,14 @@ export default defineContentScript({
 			componentId: 'slacky-export-thread-messages',
 			Component: () => <ExportMessagesButton type="thread" output="clipboard" />,
 			position: 'sibling-before',
+		});
+
+		// Settings button
+		injectComponent({
+			parentSelector: '[class$="top_nav__right_container"]',
+			componentId: 'slacky-settings',
+			Component: SettingsButton,
+			position: 'child-first',
 		});
 	},
 });

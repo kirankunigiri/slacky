@@ -2,7 +2,7 @@ import { useValue } from '@legendapp/state/react';
 
 import { settings$ } from '@/utils/store';
 
-function Settings() {
+function SettingsButton() {
 	const showSettingsButtonInSlack = useValue(settings$.showSettingsButtonInSlack);
 	if (!showSettingsButtonInSlack) return null;
 
@@ -60,4 +60,4 @@ function Settings() {
 	);
 }
 
-export default Settings;
+export default SettingsButton;
