@@ -7,6 +7,8 @@ import { PostHog, PostHogConfig } from 'posthog-js/dist/module.full.no-external'
 import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import { v7 as uuidv7 } from 'uuid';
 
+import { clientEnv as env } from '@/utils/client-env';
+
 /**
  * Setup analytics using PostHog
  * Docs: https://posthog.com/docs/advanced/browser-extension
@@ -14,7 +16,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 /** React provider for PostHog */
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-	if (import.meta.env.DEV && import.meta.env.VITE_DEV_ENABLE_ANALYTICS !== 'true') {
+	if (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS) {
 		console.log('Analytics disabled in development');
 		return children;
 	}
@@ -36,9 +38,9 @@ type PostHogClientType = 'ui' | 'background';
 
 // TODO: Is import.meta.env available in background scripts?
 const basePostHogOptions: Partial<PostHogConfig> = {
-	api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+	api_host: env.VITE_PUBLIC_POSTHOG_HOST,
 	defaults: '2025-11-30',
-	debug: import.meta.env.DEV && import.meta.env.VITE_DEV_ENABLE_ANALYTICS_LOGGING === 'true',
+	debug: import.meta.env.DEV && env.VITE_DEV_ENABLE_ANALYTICS_LOGGING,
 	disable_external_dependency_loading: true,
 	persistence: 'localStorage',
 	disable_surveys: true,
@@ -80,7 +82,7 @@ const setupPostHog = async ({
 	type: PostHogClientType
 }) => {
 	const userInfo = await getUserInfo();
-	posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
+	posthog.init(env.VITE_PUBLIC_POSTHOG_KEY, {
 		...(type === 'ui' ? uiPostHogOptions : backgroundPostHogOptions),
 		bootstrap: {
 			distinctID: userInfo.userId,
@@ -116,7 +118,7 @@ const getUserInfo = async (): Promise<UserInfo> => {
 	let devUsernamePrefix = '';
 	if (import.meta.env.MODE === 'development') {
 		isDevUser = true;
-		const analyticsUsername = import.meta.env.VITE_DEV_ANALYTICS_USERNAME;
+		const analyticsUsername = env.VITE_DEV_ANALYTICS_USERNAME;
 		devUsernamePrefix = analyticsUsername
 			? `dev_${analyticsUsername}_`
 			: 'dev_';

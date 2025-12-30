@@ -4,9 +4,13 @@ import { defineConfig } from 'wxt';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-	manifest: ({ mode }) => {
+	manifest: async ({ mode }) => {
 		const isDev = mode === 'development';
-		const analyticsHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
+
+		// Async import env vars since they are not available before this function
+		// Validation will block wxt from starting if any env vars are incorrect
+		const { clientEnv } = await import('./src/utils/client-env');
+		const analyticsHost = clientEnv.VITE_PUBLIC_POSTHOG_HOST;
 
 		// CSP for extension pages
 		const extensionPagesCsp = isDev
