@@ -18,7 +18,6 @@ const SELECTORS = {
 
 export const copyMessages = async (options: CopyMessagesOptions) => {
 	const { type, output } = options;
-	console.log(`🔄 Starting message extraction (${type} → ${output})...`);
 
 	document.body.click();
 
@@ -28,14 +27,8 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 	const messageContainer = document.querySelector<HTMLElement>(SELECTORS[type]);
 
 	if (!messageContainer) {
-		console.error(`❌ Could not find ${type} container`);
-		return;
+		throw new Error(`Could not find ${type} container`);
 	}
-
-	console.log('✅ Found scrollable container');
-	console.log('📏 Scroll height:', messageContainer.scrollHeight);
-	console.log('📏 Client height:', messageContainer.clientHeight);
-	console.log('📏 Max scroll:', messageContainer.scrollHeight - messageContainer.clientHeight);
 
 	const maxScroll = messageContainer.scrollHeight - messageContainer.clientHeight;
 	const container = messageContainer; // Store reference for nested function
@@ -115,16 +108,13 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 	}
 
 	// Scroll to bottom first
-	console.log('\n📍 Scrolling to bottom...');
 	messageContainer.scrollTop = maxScroll;
 	await new Promise(resolve => setTimeout(resolve, 1000));
 
 	// Extract initial messages
-	let newMessages = extractVisibleMessages();
-	console.log(`📥 Found ${newMessages} initial messages\n`);
+	extractVisibleMessages();
 
 	// Scroll UP through history
-	console.log('📜 Scrolling UP through message history...\n');
 
 	let stuckCount = 0;
 	let iterations = 0;
@@ -143,10 +133,7 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 			stuckCount = 0;
 		}
 
-		newMessages = extractVisibleMessages();
-		if (newMessages > 0) {
-			console.log(`📥 +${newMessages} | Total: ${allMessages.size}`);
-		}
+		extractVisibleMessages();
 
 		if (afterScroll <= 5) {
 			await new Promise(resolve => setTimeout(resolve, 1000));
@@ -156,8 +143,6 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 
 		iterations++;
 	}
-
-	console.log(`\n✅ Extraction complete! Found ${allMessages.size} messages\n`);
 
 	// Format messages - sort by rawTimestamp (earliest first)
 	const messages = Array.from(allMessages.values()).sort((a, b) => a.rawTimestamp - b.rawTimestamp);
@@ -195,8 +180,6 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 
 	if (output === 'file') {
 		// Create and download the file
-		console.log('💾 Creating download...');
-
 		const blob = new Blob([formattedText], { type: 'text/markdown' });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement('a');
@@ -210,30 +193,10 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 		link.click();
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
-
-		console.log(`\n✅ Download started!`);
-		console.log(`📁 Filename: ${link.download}`);
-		console.log(`📊 File size: ${(formattedText.length / 1024).toFixed(2)} KB`);
 	} else {
 		// Copy to clipboard
-		console.log('📋 Copying to clipboard...');
 		await navigator.clipboard.writeText(formattedText);
-		console.log(`\n✅ Copied to clipboard!`);
-		console.log(`📊 Content size: ${(formattedText.length / 1024).toFixed(2)} KB`);
 	}
-
-	console.log(`\n📊 Summary:`);
-	console.log(`   Channel: ${channelName}`);
-	console.log(`   Total messages: ${messages.length}`);
-	console.log(`   Iterations: ${iterations}`);
-
-	// Show sample messages with timestamps
-	console.log(`\n📋 Sample messages with timestamps:`);
-	messages.slice(0, 5).forEach((msg, i) => {
-		console.log(`${i + 1}. ${msg.username} - ${msg.timestamp}`);
-		console.log(`   ${msg.content.substring(0, 80)}${msg.content.length > 80 ? '...' : ''}`);
-		console.log('');
-	});
 
 	return {
 		count: messages.length,
@@ -242,17 +205,21 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 	};
 };
 
-export function CopyMessagesButton(options: CopyMessagesOptions) {
+export function ExportMessagesButton(options: CopyMessagesOptions) {
 	const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied'>('idle');
 
 	const handleClick = async () => {
 		if (copyState === 'copying') return;
 		setCopyState('copying');
-		await copyMessages(options);
-		setCopyState('copied');
-		setTimeout(() => {
+		try {
+			await copyMessages(options);
+			setCopyState('copied');
+			setTimeout(() => {
+				setCopyState('idle');
+			}, 2000);
+		} catch {
 			setCopyState('idle');
-		}, 2000);
+		}
 	};
 
 	return (
