@@ -4,9 +4,9 @@
  * - Export to clipboard or markdown file
  */
 
-export interface CopyMessagesOptions {
+export interface ExportMessagesOptions {
 	type: 'channel' | 'thread'
-	output: 'clipboard' | 'file'
+	exportFormat: Exclude<MessageExportFormat, 'disabled'>
 }
 
 const SELECTORS = {
@@ -14,9 +14,7 @@ const SELECTORS = {
 	thread: '.p-threads_flexpane_container .c-scrollbar__hider',
 } as const;
 
-export const copyMessages = async (options: CopyMessagesOptions) => {
-	const { type, output } = options;
-
+export const exportMessages = async ({ type, exportFormat }: ExportMessagesOptions) => {
 	document.body.click();
 
 	const allMessages = new Map();
@@ -176,7 +174,7 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 		}
 	}
 
-	if (output === 'file') {
+	if (exportFormat === 'markdown_file') {
 		// Create and download the file
 		const blob = new Blob([formattedText], { type: 'text/markdown' });
 		const url = URL.createObjectURL(blob);
@@ -191,14 +189,10 @@ export const copyMessages = async (options: CopyMessagesOptions) => {
 		link.click();
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
-	} else {
+	} else if (exportFormat === 'clipboard') {
 		// Copy to clipboard
 		await navigator.clipboard.writeText(formattedText);
 	}
 
-	return {
-		count: messages.length,
-		messages: messages,
-		text: formattedText,
-	};
+	throw new Error(`Invalid export format: ${exportFormat}`);
 };

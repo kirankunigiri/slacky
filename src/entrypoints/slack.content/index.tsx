@@ -14,14 +14,14 @@ export default defineContentScript({
 		injectComponent({
 			parentSelector: '.p-view_header__actions',
 			componentId: 'slacky-export-channel-messages',
-			Component: () => <ExportMessagesButton type="channel" output="clipboard" />,
+			Component: () => <ExportMessagesButton type="channel" />,
 			position: 'child-first',
 		});
 
 		injectComponent({
 			parentSelector: '[data-qa="secondary-header-more"]',
 			componentId: 'slacky-export-thread-messages',
-			Component: () => <ExportMessagesButton type="thread" output="clipboard" />,
+			Component: () => <ExportMessagesButton type="thread" />,
 			position: 'sibling-before',
 		});
 
