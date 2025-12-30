@@ -16,6 +16,7 @@ import {
 	MantineColorsTuple,
 	MantineThemeOverride,
 	Mark,
+	MultiSelect,
 	NavLink,
 	Pagination,
 	Paper,
@@ -29,6 +30,22 @@ import {
 	Timeline,
 	Tooltip,
 } from '@mantine/core';
+
+// Custom animations
+const selectProps = {
+	comboboxProps: {
+		transitionProps: {
+			transition: {
+				in: { opacity: 1, transform: 'scale(1)' },
+				out: { opacity: 0, transform: 'scale(0.95)' },
+				common: { transformOrigin: 'top' },
+				transitionProperty: 'transform, opacity',
+			},
+			duration: 100,
+		},
+	},
+	allowDeselect: false,
+};
 
 const CONTAINER_SIZES: Record<string, string> = {
 	xxs: rem('200px'),
@@ -274,6 +291,12 @@ export const shadcnTheme: MantineThemeOverride = createTheme({
 		Select: Select.extend({
 			defaultProps: {
 				checkIconPosition: 'right',
+				...selectProps,
+			},
+		}),
+		MultiSelect: MultiSelect.extend({
+			defaultProps: {
+				...selectProps,
 			},
 		}),
 		ActionIcon: ActionIcon.extend({

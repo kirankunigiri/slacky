@@ -60,4 +60,4 @@ function SettingsButton() {
 	);
 }
 
-export default SettingsButton;
+export default withSettingsLoaded(SettingsButton);

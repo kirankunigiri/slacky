@@ -1,6 +1,8 @@
 import { observable, syncState, when } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 
+export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
+
 /** Settings stored in Chrome storage */
 interface Settings {
 	removeAllEmbedLinks: boolean
@@ -8,6 +10,7 @@ interface Settings {
 	autoConfirmEmbedRemoval: boolean
 	showSettingsButtonInSlack: boolean
 	embedLinkFilters: string[]
+	messageExportFormat: MessageExportFormat
 }
 
 const defaultSettings: Settings = {
@@ -16,6 +19,7 @@ const defaultSettings: Settings = {
 	autoConfirmEmbedRemoval: true,
 	showSettingsButtonInSlack: true,
 	embedLinkFilters: [],
+	messageExportFormat: 'clipboard',
 };
 
 const STORAGE_KEY = 'local:settings' as const;

@@ -1,9 +1,17 @@
+import { useValue } from '@legendapp/state/react';
 import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
 
 import { copyMessages, CopyMessagesOptions } from '@/entrypoints/slack.content/export';
 
-export function ExportMessagesButton(options: CopyMessagesOptions) {
+/**
+ * Button that exports all messages in a channel/thread
+ * Transitions between idle, copying, and copied states
+ */
+function ExportMessagesButton(options: CopyMessagesOptions) {
+	const messageExportFormat = useValue(settings$.messageExportFormat);
 	const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied'>('idle');
+
+	if (messageExportFormat === 'disabled') return null;
 
 	const handleClick = async () => {
 		if (copyState === 'copying') return;
@@ -48,3 +56,5 @@ export function ExportMessagesButton(options: CopyMessagesOptions) {
 		</button>
 	);
 }
+
+export default withSettingsLoaded(ExportMessagesButton);

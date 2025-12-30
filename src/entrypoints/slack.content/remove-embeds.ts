@@ -1,7 +1,7 @@
 import { settings$ } from '@/utils/store';
 
 /** Removes embed links from Slack messages */
-export const removeEmbeds = () => {
+const removeEmbeds = () => {
 	// Function to process a message attachment and delete if it contains a GitHub link
 	async function processAttachment(attachment: Element) {
 		// Find the first link inside the attachment
@@ -105,3 +105,5 @@ export const removeEmbeds = () => {
  * Message attachment div - .c-message_attachment__title_link
  * <a target="_blank" class="c-link c-message_attachment__title_link" data-qa="message_attachment_title_link" href="https://github.com/wxt-dev/wxt/discussions/1314" rel="noopener noreferrer"><span dir="auto">Installing the extension on existing Chrome window? · wxt-dev wxt · Discussion #1314</span><span aria-label="(opens in new tab)" data-qa="opens-in-new-tab"></span></a>
  */
+
+export default removeEmbeds;

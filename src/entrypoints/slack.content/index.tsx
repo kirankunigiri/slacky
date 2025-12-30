@@ -1,5 +1,5 @@
-import { ExportMessagesButton } from '@/entrypoints/slack.content/export-btn';
-import { removeEmbeds } from '@/entrypoints/slack.content/remove-embeds';
+import ExportMessagesButton from '@/entrypoints/slack.content/export-btn';
+import removeEmbeds from '@/entrypoints/slack.content/remove-embeds';
 import SettingsButton from '@/entrypoints/slack.content/settings-btn';
 
 export default defineContentScript({
