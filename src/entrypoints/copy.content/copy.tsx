@@ -1,26 +1,34 @@
+import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
+
 /**
- * Work in progress...
- * Automatically scrolls through the messages in a channel/thread to extract all messages
- * Scrolling is used because the message lists are virtualized
+ * Slack Message Exporter - export all message in a channel or thread
+ * - Scrolling is required because the message lists are virtualized
+ * - Export to clipboard or markdown file
  */
 
-export const copyMessages = async () => {
-	console.log('🔄 Starting message extraction...');
+interface CopyMessagesOptions {
+	type: 'channel' | 'thread'
+	output: 'clipboard' | 'file'
+}
+
+const SELECTORS = {
+	channel: '#message-list .c-scrollbar__hider',
+	thread: '.p-threads_flexpane_container .c-scrollbar__hider',
+} as const;
+
+export const copyMessages = async (options: CopyMessagesOptions) => {
+	const { type, output } = options;
+	console.log(`🔄 Starting message extraction (${type} → ${output})...`);
 
 	document.body.click();
 
 	const allMessages = new Map();
 
-	// Find the scrollable hider element
-	const messageContainer = document.querySelector('.p-threads_flexpane_container .c-scrollbar__hider');
-	// let messageContainer = document.querySelector('#message-list .c-scrollbar__hider');
-
-	// if (!messageContainer) {
-	// 	messageContainer = document.querySelector('.c-message_list .c-scrollbar__hider');
-	// }
+	// Find the scrollable container based on type
+	const messageContainer = document.querySelector<HTMLElement>(SELECTORS[type]);
 
 	if (!messageContainer) {
-		console.error('❌ Could not find scrollbar hider');
+		console.error(`❌ Could not find ${type} container`);
 		return;
 	}
 
@@ -30,22 +38,23 @@ export const copyMessages = async () => {
 	console.log('📏 Max scroll:', messageContainer.scrollHeight - messageContainer.clientHeight);
 
 	const maxScroll = messageContainer.scrollHeight - messageContainer.clientHeight;
+	const container = messageContainer; // Store reference for nested function
 
 	// Function to extract messages
 	function extractVisibleMessages() {
-		const messageElements = messageContainer.querySelectorAll('[data-qa="virtual-list-item"]');
+		const messageElements = container.querySelectorAll('[data-qa="virtual-list-item"]');
 		let newCount = 0;
 
 		messageElements.forEach((element) => {
 			try {
-				const contentElement = element.querySelector('[data-qa="message-text"]');
+				const contentElement = element.querySelector('[data-qa="message-text"]') as HTMLElement | null;
 				if (!contentElement) return;
 
 				const content = contentElement.innerText.trim();
 				if (!content) return;
 
 				// Look for the timestamp link (it's in a <a> tag with class c-timestamp)
-				let timestamp = '';
+				let rawTimestamp = '';
 				let displayTime = 'No timestamp';
 
 				// TODO: Also try data-msg-ts
@@ -58,33 +67,32 @@ export const copyMessages = async () => {
 						displayTime = ariaLabel;
 					}
 
-					// Get data-ts for unique ID
-					timestamp = timestampLink.getAttribute('data-ts');
+					// Get data-ts for unique ID and sorting (Unix timestamp)
+					rawTimestamp = timestampLink.getAttribute('data-ts') ?? '';
 				}
 
 				// Fallback: try the old selector
 				if (displayTime === 'No timestamp') {
-					const timeElement = element.querySelector('[data-qa="message_timestamp"]');
+					const timeElement = element.querySelector('[data-qa="message_timestamp"]') as HTMLElement | null;
 					if (timeElement) {
-						displayTime = timeElement.getAttribute('aria-label')
-						  || timeElement.innerText.trim();
-						timestamp = timeElement.getAttribute('data-ts');
+						displayTime = timeElement.getAttribute('aria-label') || timeElement.innerText.trim();
+						rawTimestamp = timeElement.getAttribute('data-ts') ?? '';
 					}
 				}
 
 				const itemKey = element.getAttribute('data-item-key')
-				  || `${timestamp}_${content.substring(0, 100)}`;
+					|| `${rawTimestamp}_${content.substring(0, 100)}`;
 
 				if (allMessages.has(itemKey)) return;
 
-				const usernameElement = element.querySelector('[data-qa="message_sender"]');
+				const usernameElement = element.querySelector('[data-qa="message_sender"]') as HTMLElement | null;
 				let username = 'Unknown';
 
 				if (usernameElement) {
 					username = usernameElement.innerText.trim();
 				} else {
 					// Fallback to other username selectors
-					const altUsername = element.querySelector('.c-message__sender');
+					const altUsername = element.querySelector('.c-message__sender') as HTMLElement | null;
 					if (altUsername) {
 						username = altUsername.innerText.trim();
 					}
@@ -93,6 +101,7 @@ export const copyMessages = async () => {
 				allMessages.set(itemKey, {
 					username,
 					timestamp: displayTime,
+					rawTimestamp: parseFloat(rawTimestamp) || 0, // Unix timestamp for sorting
 					content,
 					id: itemKey,
 				});
@@ -150,43 +159,68 @@ export const copyMessages = async () => {
 
 	console.log(`\n✅ Extraction complete! Found ${allMessages.size} messages\n`);
 
-	// Format messages
-	const messages = Array.from(allMessages.values()).sort((a, b) => a.timestamp - b.timestamp);
+	// Format messages - sort by rawTimestamp (earliest first)
+	const messages = Array.from(allMessages.values()).sort((a, b) => a.rawTimestamp - b.rawTimestamp);
 
-	const channelName = document.querySelector('[data-qa="channel_name"]')?.innerText
-	  || document.title.split(' - ')[0]
-	  || 'Slack Channel';
+	const channelName = (document.querySelector('[data-qa="channel_name"]') as HTMLElement | null)?.innerText || document.title.split(' - ')[0] || 'Slack Channel';
 
-	let formattedText = `Slack Channel Export\n`;
-	formattedText += `Channel: ${channelName}\n`;
-	formattedText += `Total Messages: ${messages.length}\n`;
-	formattedText += `Exported: ${new Date().toLocaleString()}\n\n`;
-	formattedText += `${'='.repeat(70)}\n\n`;
+	// Format as Markdown
+	let formattedText = `# Slack Messages\n\n`;
+	formattedText += `**Type:** ${type === 'thread' ? 'Thread' : 'Channel'}\n`;
+	formattedText += `**Channel:** ${channelName}\n`;
+	formattedText += `**Total Messages:** ${messages.length}\n`;
+	formattedText += `**Exported:** ${new Date().toLocaleString()}\n\n`;
+	formattedText += `---\n\n`;
 
-	formattedText += messages.map(msg =>
-		`${msg.username} - ${msg.timestamp}\n${msg.content}\n`,
-	).join(`\n${'-'.repeat(70)}\n\n`);
+	// Group consecutive messages from same sender (Unknown = continuation of previous sender)
+	let lastKnownSender = '';
+	for (const msg of messages) {
+		const isUnknown = msg.username === 'Unknown';
+		const isSameSender = isUnknown || msg.username === lastKnownSender;
 
-	// Create and download the file
-	console.log('💾 Creating download...');
+		if (isSameSender && lastKnownSender) {
+			// Continue previous sender's block - just add timestamp and content
+			formattedText += `*${msg.timestamp}*\n${msg.content}\n\n`;
+		} else {
+			// New sender - start a new block with separator
+			if (lastKnownSender) {
+				formattedText += `---\n\n`;
+			}
+			formattedText += `### ${msg.username}\n*${msg.timestamp}*\n\n${msg.content}\n\n`;
+			if (!isUnknown) {
+				lastKnownSender = msg.username;
+			}
+		}
+	}
 
-	const blob = new Blob([formattedText], { type: 'text/plain' });
-	const url = URL.createObjectURL(blob);
-	const link = document.createElement('a');
-	link.href = url;
+	if (output === 'file') {
+		// Create and download the file
+		console.log('💾 Creating download...');
 
-	const safeChannelName = channelName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-	const dateStr = new Date().toISOString().split('T')[0];
-	link.download = `slack_export_${safeChannelName}_${dateStr}.txt`;
+		const blob = new Blob([formattedText], { type: 'text/markdown' });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
 
-	document.body.appendChild(link);
-	link.click();
-	document.body.removeChild(link);
-	URL.revokeObjectURL(url);
+		const safeChannelName = channelName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+		const dateStr = new Date().toISOString().split('T')[0];
+		link.download = `slack_export_${safeChannelName}_${dateStr}.md`;
 
-	console.log(`\n✅ Download started!`);
-	console.log(`📁 Filename: ${link.download}`);
-	console.log(`📊 File size: ${(formattedText.length / 1024).toFixed(2)} KB`);
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+
+		console.log(`\n✅ Download started!`);
+		console.log(`📁 Filename: ${link.download}`);
+		console.log(`📊 File size: ${(formattedText.length / 1024).toFixed(2)} KB`);
+	} else {
+		// Copy to clipboard
+		console.log('📋 Copying to clipboard...');
+		await navigator.clipboard.writeText(formattedText);
+		console.log(`\n✅ Copied to clipboard!`);
+		console.log(`📊 Content size: ${(formattedText.length / 1024).toFixed(2)} KB`);
+	}
 
 	console.log(`\n📊 Summary:`);
 	console.log(`   Channel: ${channelName}`);
@@ -208,10 +242,17 @@ export const copyMessages = async () => {
 	};
 };
 
-export function CopyButton() {
+export function CopyMessagesButton(options: CopyMessagesOptions) {
+	const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied'>('idle');
+
 	const handleClick = async () => {
-		console.log('Copying messages...');
-		copyMessages();
+		if (copyState === 'copying') return;
+		setCopyState('copying');
+		await copyMessages(options);
+		setCopyState('copied');
+		setTimeout(() => {
+			setCopyState('idle');
+		}, 2000);
 	};
 
 	return (
@@ -225,14 +266,21 @@ export function CopyButton() {
 			tabIndex={-1}
 			onClick={handleClick}
 		>
-			<div style={{ width: '20px', height: '20px', display: 'inline-block' }}>
-				<svg width="100%" height="100%" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M36.4 56.2C36.4 63.5 30.5 69.4 23.2 69.4C15.9 69.4 10 63.5 10 56.2C10 48.9 15.9 43 23.2 43H36.4V56.2Z" fill="#E01E5A" />
-					<path d="M23.2 36.4C15.9 36.4 10 30.5 10 23.2C10 15.9 15.9 10 23.2 10C30.5 10 36.4 15.9 36.4 23.2V36.4H23.2Z" fill="#36C5F0" />
-					<path d="M43 23.2C43 15.9 48.9 10 56.2 10C63.5 10 69.4 15.9 69.4 23.2C69.4 30.5 63.5 36.4 56.2 36.4H43V23.2Z" fill="#2EB67D" />
-					<path d="M56.2 43C63.5 43 69.4 48.9 69.4 56.2C69.4 63.5 63.5 69.4 56.2 69.4C48.9 69.4 43 63.5 43 56.2V43H56.2Z" fill="#ECB22E" />
-				</svg>
-			</div>
+			{copyState === 'idle' && <IconCopy size={16} />}
+			{copyState === 'copying' && (
+				<span
+					style={{
+						display: 'inline-flex',
+						animation: 'spin 1s linear infinite',
+					}}
+				>
+					<style>
+						{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}
+					</style>
+					<IconLoader2 size={16} />
+				</span>
+			)}
+			{copyState === 'copied' && <IconCheck size={16} />}
 		</button>
 	);
 }

@@ -62,6 +62,7 @@ export default defineConfig(
 			// Stylistic
 			'@stylistic/no-tabs': 'off',
 			'@stylistic/indent': ['warn', 'tab'],
+			'@stylistic/indent-binary-ops': ['warn', 'tab'],
 			'@stylistic/jsx-indent': ['warn', 'tab'],
 			'@stylistic/jsx-indent-props': ['warn', 'tab'],
 			'@stylistic/semi': ['error', 'always'],
