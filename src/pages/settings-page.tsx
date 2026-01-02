@@ -4,25 +4,33 @@ import { IconCheck, IconCircleOff, IconClipboard, IconMarkdown } from '@tabler/i
 import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 
 import { AnimatedLogo } from '@/components/animated-logo';
+import { BaseApp } from '@/pages/base-app';
 import { settings$ } from '@/utils/store';
 
-function AppComponent() {
+function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');
 	if (isPopup) {
 		return (
 			<div className="h-[500px] max-h-[500px] overflow-hidden">
-				<AppContent />
+				<SettingsPageContent />
 			</div>
 		);
 	}
 
-	return <AppContent />;
+	return <SettingsPageContent />;
 }
-export const App = withSettingsLoaded(AppComponent);
+const SettingsPage = withSettingsLoaded(SettingsPageImpl);
 
-function AppContent() {
+ReactDOM.createRoot(document.getElementById('root')!).render(
+	<BaseApp>
+		<SettingsPage />
+	</BaseApp>,
+);
+
+function SettingsPageContent() {
 	return (
 		<div className="flex h-full flex-col">
 			<Header />
@@ -340,5 +348,3 @@ function Header() {
 		</div>
 	);
 }
-
-export default App;
