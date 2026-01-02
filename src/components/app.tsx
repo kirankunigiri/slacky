@@ -60,8 +60,22 @@ function AppContent() {
 			{/* Footer */}
 			<Divider className="mx-5" variant="dashed" />
 			<div className="flex justify-around px-5 py-3 text-sm">
-				<Badge variant="dot" color="blue">View tutorial</Badge>
+
+				{/* View tutorial button */}
+				<Badge
+					className="cursor-pointer!"
+					component="a"
+					href={browser.runtime.getURL('/tutorial.html')}
+					target="_blank"
+					rel="noreferrer"
+					variant="dot"
+					color="blue"
+				>
+					View tutorial
+				</Badge>
 				<div className="flex-1"></div>
+
+				{/* GitHub link */}
 				<a
 					href="https://github.com/kirankunigiri"
 					target="_blank"
@@ -285,17 +299,20 @@ function Header() {
 		<div className="flex items-center gap-1 px-5 pt-3 pb-3">
 			<AnimatedLogo />
 			<p className="text-xl font-bold">Slacky</p>
-			<a
-				className="ml-2"
-				href={`chrome-extension://${browser.runtime.id}/options.html`}
-				target="_blank"
-				rel="noreferrer"
-			>
-				<Badge variant="outline">dev</Badge>
-				{/* {import.meta.env.MODE === 'development' && (
-					<Badge variant="outline">dev</Badge>
-				)} */}
-			</a>
+
+			{/* In dev mode, this hotlink opens the settings in a new tab */}
+			{import.meta.env.MODE === 'development' && (
+				<Badge
+					href={browser.runtime.getURL('/options.html')}
+					target="_blank"
+					rel="noreferrer"
+					component="a"
+					className="ml-2 cursor-pointer!"
+					variant="outline"
+				>
+					dev
+				</Badge>
+			)}
 
 			{/* Devtools */}
 			<div className="ml-auto" />
