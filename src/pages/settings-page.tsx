@@ -1,12 +1,12 @@
 import { Memo, useValue } from '@legendapp/state/react';
-import { ActionIcon, Badge, Button, Checkbox, Divider, Group, ScrollArea, Select, SelectProps, Space, TextInput, Tooltip, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, Badge, Button, Checkbox, Divider, Group, ScrollArea, Select, SelectProps, Space, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconCheck, IconCircleOff, IconClipboard, IconMarkdown } from '@tabler/icons-react';
-import { Moon, PlusIcon, RotateCw, Sun, TrashIcon } from 'lucide-react';
+import { PlusIcon, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { AnimatedLogo } from '@/components/animated-logo';
+import Header from '@/components/header';
 import { BaseApp } from '@/pages/base-app';
 import { settings$ } from '@/utils/store';
 
@@ -14,7 +14,7 @@ function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');
 	if (isPopup) {
 		return (
-			<div className="h-[500px] max-h-[500px] overflow-hidden">
+			<div className="h-[500px]! max-h-[500px]! w-[340px]! min-w-[340px]! overflow-hidden">
 				<SettingsPageContent />
 			</div>
 		);
@@ -259,7 +259,7 @@ function EmbedLinkSettings() {
 function OtherSettings() {
 	return (
 		<div className="flex flex-col gap-1">
-			<p className="text-base font-medium">Advanced</p>
+			<p className="text-base font-medium">Other</p>
 			<div className="h-1"></div>
 			<div className="flex items-center space-x-2">
 				<div className="flex flex-col gap-3">
@@ -295,55 +295,6 @@ function OtherSettings() {
 					</Memo>
 					<Space h="xs" />
 				</div>
-			</div>
-		</div>
-	);
-}
-
-function Header() {
-	const { toggleColorScheme, colorScheme } = useMantineColorScheme();
-
-	return (
-		<div className="flex items-center gap-1 px-5 pt-3 pb-3">
-			<AnimatedLogo />
-			<p className="text-xl font-bold">Slacky</p>
-
-			{/* In dev mode, this hotlink opens the settings in a new tab */}
-			{import.meta.env.MODE === 'development' && (
-				<Badge
-					href={browser.runtime.getURL('/options.html')}
-					target="_blank"
-					rel="noreferrer"
-					component="a"
-					className="ml-2 cursor-pointer!"
-					variant="outline"
-				>
-					dev
-				</Badge>
-			)}
-
-			{/* Devtools */}
-			<div className="ml-auto" />
-			<div className="flex gap-1">
-				{/* Toggle theme */}
-				<Tooltip label="Toggle theme">
-					<ActionIcon variant="light" onClick={toggleColorScheme}>
-						{colorScheme === 'dark' ? <Moon className="size-4" /> : <Sun className="size-4" />}
-					</ActionIcon>
-				</Tooltip>
-
-				{/* Clear storage */}
-				<Tooltip label="Clear storage">
-					<ActionIcon
-						color="red"
-						className="w-full"
-						variant="light"
-						onClick={() => {
-							browser.storage.local.clear();
-						}}
-					><RotateCw className="size-3.5" />
-					</ActionIcon>
-				</Tooltip>
 			</div>
 		</div>
 	);
