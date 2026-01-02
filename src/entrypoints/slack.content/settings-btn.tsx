@@ -23,7 +23,7 @@ function SettingsButton() {
 			style={{ marginRight: '4px' }}
 			// eslint-disable-next-line better-tailwindcss/no-unregistered-classes
 			className="c-button-unstyled p-top_nav__button p-top_nav__help"
-			data-qa="highlight-btn"
+			data-qa="slacky-settings-button"
 			aria-label="Slacky Settings"
 			data-sk="tooltip_parent"
 			type="button"

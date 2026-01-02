@@ -15,7 +15,8 @@
 		"postinstall": "wxt prepare",
 		"sync-env": "doppler -p slacky -c dev secrets download --no-file --format env | tee .env > /dev/null",
 		"test": "playwright test",
-		"test:ui": "playwright test --headed"
+		"test:headed": "playwright test --headed",
+		"test:ui": "playwright test --ui"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.0.0",

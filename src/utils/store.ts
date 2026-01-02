@@ -15,7 +15,7 @@ interface Settings {
 
 const defaultSettings: Settings = {
 	removeAllEmbedLinks: false,
-	openSlackLinksInBrowser: false,
+	openSlackLinksInBrowser: true,
 	autoConfirmEmbedRemoval: true,
 	showSettingsButtonInSlack: true,
 	embedLinkFilters: [],
