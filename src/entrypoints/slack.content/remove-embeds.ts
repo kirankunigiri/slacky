@@ -1,5 +1,20 @@
 import { settings$ } from '@/utils/store';
 
+/** Checks if a URL's hostname matches a domain filter (including subdomains) */
+const matchesDomainFilter = (href: string, filter: string): boolean => {
+	try {
+		const url = new URL(href);
+		const hostname = url.hostname.toLowerCase();
+		const filterDomain = filter.toLowerCase();
+
+		// Exact match or subdomain match (e.g., "api.github.com" matches filter "github.com")
+		return hostname === filterDomain || hostname.endsWith(`.${filterDomain}`);
+	} catch {
+		// Invalid URL, no match
+		return false;
+	}
+};
+
 /** Removes embed links from Slack messages */
 const removeEmbeds = () => {
 	// Function to process a message attachment and delete if it contains a GitHub link
@@ -13,7 +28,7 @@ const removeEmbeds = () => {
 		const removeAllEmbedLinks = settings$.removeAllEmbedLinks.get();
 		const embedLinkFilters = settings$.embedLinkFilters.get();
 
-		if (!removeAllEmbedLinks && !embedLinkFilters.some(filter => href.toLowerCase().includes(filter.toLowerCase()))) {
+		if (!removeAllEmbedLinks && !embedLinkFilters.some(filter => matchesDomainFilter(href, filter))) {
 			return;
 		}
 
