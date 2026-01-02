@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core';
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
 import { shadcnTheme } from '@/theme/theme.tsx';
@@ -9,9 +9,16 @@ if (import.meta.env.DEV) {
 	import('react-scan').then(({ scan }) => scan({ enabled: true }));
 }
 
+const DevInspector = import.meta.env.DEV ? lazy(() => import('@/components/dev-inspector')) : null;
+
 export function BaseApp({ children }: { children: React.ReactNode }) {
 	return (
 		<React.StrictMode>
+			{import.meta.env.DEV && (
+				<Suspense fallback={null}>
+					{DevInspector && <DevInspector />}
+				</Suspense>
+			)}
 			<AnalyticsProvider>
 				<MantineProvider
 					defaultColorScheme="dark"

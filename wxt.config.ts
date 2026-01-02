@@ -1,3 +1,4 @@
+import { inspectorServer } from '@react-dev-inspector/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { defineConfig } from 'wxt';
@@ -45,12 +46,28 @@ export default defineConfig({
 		baseIconPath: 'assets/icon.svg',
 		developmentIndicator: 'overlay',
 	},
+	react: {
+		vite: {
+			babel: {
+				plugins: [
+					'@react-dev-inspector/babel-plugin',
+				],
+			},
+		},
+	},
 	vite: () => ({
-		plugins: [tailwindcss()],
+		plugins: [
+			tailwindcss(),
+			inspectorServer() as never,
+		],
 		resolve: {
 			alias: {
 				'@': path.resolve(__dirname, './src'),
 			},
+		},
+		// Used by the dev inspector to open the correct file in the IDE
+		define: {
+			'import.meta.env.VITE_PROJECT_ROOT': JSON.stringify(path.resolve(__dirname)),
 		},
 	}),
 });
