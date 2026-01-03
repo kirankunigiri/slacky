@@ -17,6 +17,9 @@ const matchesDomainFilter = (href: string, filter: string): boolean => {
 
 /** Removes embed links from Slack messages */
 const removeEmbeds = () => {
+	// Track whether we initiated the removal (vs user manually clicking delete)
+	let extensionInitiatedRemoval = false;
+
 	// Function to process a message attachment and delete if it contains a GitHub link
 	async function processAttachment(attachment: Element) {
 		// Find the first link inside the attachment
@@ -35,14 +38,17 @@ const removeEmbeds = () => {
 		// Find the delete button inside this attachment
 		const deleteButton = attachment.querySelector('.c-message_attachment__delete') as HTMLButtonElement | null;
 		if (deleteButton) {
+			extensionInitiatedRemoval = true;
 			deleteButton.click();
 		}
 	}
 
 	// Function to click the confirmation Remove button in modal
 	function clickConfirmButton(confirmButton: HTMLButtonElement) {
-		if (settings$.autoConfirmEmbedRemoval.get()) {
+		// Auto-confirm if extension initiated the removal, or if autoConfirmEmbedRemoval is enabled for manual removals
+		if (extensionInitiatedRemoval || settings$.autoConfirmEmbedRemoval.get()) {
 			confirmButton.click();
+			extensionInitiatedRemoval = false; // Reset flag after confirming
 		}
 	}
 

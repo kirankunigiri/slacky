@@ -1,6 +1,10 @@
+import 'photoswipe/dist/photoswipe.css';
+
 import { Button, Divider, Space, Text } from '@mantine/core';
 import { IconBrandGithub } from '@tabler/icons-react';
 import ReactDOM from 'react-dom/client';
+import { Gallery, Item } from 'react-photoswipe-gallery';
+import { twMerge } from 'tailwind-merge';
 
 import Credits from '@/components/credits';
 import Header from '@/components/header';
@@ -26,6 +30,11 @@ function TutorialPageContent() {
 				<div className="max-w-[400px]">
 					<RemoveEmbedSettings />
 				</div>
+				<Space h="md" />
+				<div className="flex w-full justify-between gap-4">
+					<LightboxImage src="https://i.imgur.com/JNZ6NUV.gif" width={400} height={549} className="" caption="Before" />
+					<LightboxImage src="https://i.imgur.com/G4xssdh.gif" width={400} height={549} className="" caption="After" />
+				</div>
 			</Section>
 
 			{/* Auto-confirm embed removal */}
@@ -34,14 +43,21 @@ function TutorialPageContent() {
 				<Text size="sm" color="dimmed">If you don&apos;t have &quot;remove embed links&quot; enabled, you can still remove embeds manually, but Slack always shows a confirmation dialog. This setting automatically confirms the dialog for you.</Text>
 				<Space h="md" />
 				<SettingAutoConfirmEmbedRemoval />
+				<Space h="md" />
+				<div className="flex w-full justify-between gap-4">
+					<LightboxImage src="https://i.imgur.com/kG2c5WO.gif" width={400} height={549} className="" caption="Before" />
+					<LightboxImage src="https://i.imgur.com/06JOUwj.gif" width={400} height={549} className="" caption="After" />
+				</div>
 			</Section>
 
 			{/* Open Slack links in browser */}
 			<Section>
 				<Text size="lg" fw="bold">Open Slack links in browser</Text>
-				<Text size="sm" color="dimmed">When opening a Slack link in the browser, Slack always asks to open the Slack app. This setting automatically opens the link in the web version instead.</Text>
+				<Text size="sm" color="dimmed">When opening a Slack link in the browser, Slack always asks to open the desktop app. This setting automatically opens the web version instead.</Text>
 				<Space h="md" />
 				<SettingOpenSlackLinksInBrowser />
+				<Space h="md" />
+				<LightboxImage src="https://i.imgur.com/Q5OIUgs.png" width={984} height={1026} className="max-h-[350px]" />
 			</Section>
 
 			{/* Show settings button in Slack */}
@@ -50,6 +66,8 @@ function TutorialPageContent() {
 				<Text size="sm" color="dimmed">The Slacky settings button will appear in the top right corner of the Slack web app. Clicking it will open the settings.</Text>
 				<Space h="md" />
 				<SettingShowSettingsButtonInSlack />
+				<Space h="md" />
+				<LightboxImage src="https://i.imgur.com/35yKnHM.png" width={863} height={304} className="max-h-[150px]" />
 			</Section>
 
 			{/* Message Export */}
@@ -61,12 +79,14 @@ function TutorialPageContent() {
 					<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
 					<MessageExportSettings />
 				</div>
+				<Space h="md" />
+				<LightboxImage src="https://i.imgur.com/BuHZCKG.png" width={1450} height={270} />
 			</Section>
 
 			{/* Contributing & Feature Requests */}
 			<Section>
 				<Text size="lg" fw="bold">Contributing & Feature Requests</Text>
-				<Text size="sm" color="dimmed">You can request new features by opening an issue or directly contribute to the project on GitHub.</Text>
+				<Text size="sm" c="dimmed">You can request new features by opening an issue or directly contribute to the project on GitHub.</Text>
 				<Space h="sm" />
 				<div className="flex w-full items-baseline justify-between gap-3">
 					<Button
@@ -95,10 +115,41 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 function Section({ children }: { children: React.ReactNode }) {
 	return (
 		<div>
+			{/* TODO: Test vertical line square off vs. cards */}
+			{/* <Divider variant="solid" className="mx-[-20px]" /> */}
 			<Divider variant="dashed" />
 			<Space h="3xl" />
 			{children}
 			<Space h="3xl" />
 		</div>
+	);
+}
+
+function LightboxImage({ src, width, height, className, caption }: { src: string, width: number, height: number, className?: string, caption?: string }) {
+	return (
+		<Gallery options={{
+			imageClickAction: 'close',
+			tapAction: 'close',
+		}}
+		>
+			<Item
+				original={src}
+				thumbnail={src}
+				width={width}
+				height={height}
+				cropped
+			>
+				{({ ref, open }) => (
+					<div className="inline-block">
+						<img ref={ref} onClick={open} src={src} className={twMerge('cursor-zoom-in rounded-md border-2 border-black/30 dark:border-white/20', className)} />
+						{caption && (
+							<p className="mt-1.5 text-center text-sm text-gray-500 dark:text-gray-400">
+								{caption}
+							</p>
+						)}
+					</div>
+				)}
+			</Item>
+		</Gallery>
 	);
 }
