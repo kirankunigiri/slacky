@@ -8,7 +8,7 @@ import { exportMessages, ExportMessagesOptions } from '@/entrypoints/slack.conte
  * Transitions between idle, copying, and copied states
  */
 function ExportMessagesButton({ type }: Pick<ExportMessagesOptions, 'type'>) {
-	const messageExportFormat = useValue(settings$.messageExportFormat);
+	const messageExportFormat = useValue(settings$.message_export_format);
 	const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied'>('idle');
 
 	if (messageExportFormat === 'disabled') return null;

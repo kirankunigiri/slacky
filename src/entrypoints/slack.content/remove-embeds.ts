@@ -28,8 +28,8 @@ const removeEmbeds = () => {
 
 		const href = link.getAttribute('href') || '';
 		await loadSettings();
-		const removeAllEmbedLinks = settings$.removeAllEmbedLinks.get();
-		const embedLinkFilters = settings$.embedLinkFilters.get();
+		const removeAllEmbedLinks = settings$.remove_all_embed_links.get();
+		const embedLinkFilters = settings$.embed_link_filters.get().filter(filter => filter !== '');
 
 		if (!removeAllEmbedLinks && !embedLinkFilters.some(filter => matchesDomainFilter(href, filter))) {
 			return;
@@ -46,7 +46,7 @@ const removeEmbeds = () => {
 	// Function to click the confirmation Remove button in modal
 	function clickConfirmButton(confirmButton: HTMLButtonElement) {
 		// Auto-confirm if extension initiated the removal, or if autoConfirmEmbedRemoval is enabled for manual removals
-		if (extensionInitiatedRemoval || settings$.autoConfirmEmbedRemoval.get()) {
+		if (extensionInitiatedRemoval || settings$.auto_confirm_embed_removal.get()) {
 			confirmButton.click();
 			extensionInitiatedRemoval = false; // Reset flag after confirming
 		}

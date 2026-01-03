@@ -1,25 +1,27 @@
 import { observable, syncState, when } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 
+import { ph } from '@/utils/analytics';
+
 export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
 
 /** Settings stored in Chrome storage */
 interface Settings {
-	removeAllEmbedLinks: boolean
-	openSlackLinksInBrowser: boolean
-	autoConfirmEmbedRemoval: boolean
-	showSettingsButtonInSlack: boolean
-	embedLinkFilters: string[]
-	messageExportFormat: MessageExportFormat
+	remove_all_embed_links: boolean
+	open_slack_links_in_browser: boolean
+	auto_confirm_embed_removal: boolean
+	show_settings_button_in_slack: boolean
+	embed_link_filters: string[]
+	message_export_format: MessageExportFormat
 }
 
 const defaultSettings: Settings = {
-	removeAllEmbedLinks: false,
-	openSlackLinksInBrowser: true,
-	autoConfirmEmbedRemoval: true,
-	showSettingsButtonInSlack: true,
-	embedLinkFilters: [],
-	messageExportFormat: 'clipboard',
+	remove_all_embed_links: false,
+	open_slack_links_in_browser: true,
+	auto_confirm_embed_removal: true,
+	show_settings_button_in_slack: true,
+	embed_link_filters: [],
+	message_export_format: 'clipboard',
 };
 
 const STORAGE_KEY = 'local:settings' as const;
@@ -33,7 +35,8 @@ export const settings$ = observable<Settings>(
 			const value = await storage.getItem(STORAGE_KEY);
 			if (value) {
 				try {
-					return JSON.parse(value as string) as Settings;
+					const stored = JSON.parse(value as string) as Partial<Settings>;
+					return { ...defaultSettings, ...stored };
 				} catch {
 					return defaultSettings;
 				}
@@ -41,8 +44,16 @@ export const settings$ = observable<Settings>(
 			return defaultSettings;
 		},
 
-		// Save settings to WXT storage
-		set: async ({ value }) => {
+		// Save settings to WXT storage and capture analytics event
+		set: async ({ value, changes }) => {
+			for (const change of changes) {
+				const changePath = change.path[0];
+				const changeValue = value[changePath as keyof Settings];
+				ph.capture('setting_updated', {
+					setting: changePath,
+					value: changeValue,
+				});
+			}
 			await storage.setItem(STORAGE_KEY, JSON.stringify(value));
 		},
 

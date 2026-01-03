@@ -36,7 +36,7 @@ const startMonitoring = async () => {
 const findAndOpenBrowserSlackLink = async () => {
 	// Check if setting is enabled
 	await loadSettings();
-	const openSlackLinksInBrowser = settings$.openSlackLinksInBrowser.get();
+	const openSlackLinksInBrowser = settings$.open_slack_links_in_browser.get();
 	if (!openSlackLinksInBrowser) return false;
 
 	// Find and open browser link

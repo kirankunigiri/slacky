@@ -14,23 +14,53 @@ import { clientEnv as env } from '@/utils/client-env';
  * Docs: https://posthog.com/docs/advanced/browser-extension
  */
 
+export const ph = new PostHog();
+const disableAnalytics = import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS;
+if (!disableAnalytics) {
+	setupPostHog({ posthog: ph, type: 'ui' });
+}
+
 /** React provider for PostHog */
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-	if (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS) {
+	if (disableAnalytics) {
 		console.log('Analytics disabled in development');
-		return children;
+		return (
+			<ErrorFallback>
+				{children}
+			</ErrorFallback>
+		);
 	}
-
-	const posthog = new PostHog();
-	setupPostHog({ posthog, type: 'ui' });
 
 	return (
 		// @ts-expect-error - PostHogProvider is not type compatible with PostHog client from module.no-external
-		<PostHogProvider client={posthog}>
-			<PostHogErrorBoundary>
+		<PostHogProvider client={ph}>
+			<ErrorFallback>
 				{children}
-			</PostHogErrorBoundary>
+			</ErrorFallback>
 		</PostHogProvider>
+	);
+}
+
+function ErrorFallback({ children }: { children: React.ReactNode }) {
+	return (
+		<PostHogErrorBoundary fallback={(
+			<div className="p-4 text-center">
+				<span className="text-red-500">Slacky has crashed.</span>
+				<br />
+				<a
+					className="hover:underline"
+					href="https://github.com/kirankunigiri/slacky/issues/new/choose"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Please file an issue on{' '}
+					<span className="text-blue-500">GitHub</span>
+				</a>
+			</div>
+		)}
+		>
+			{children}
+		</PostHogErrorBoundary>
 	);
 }
 
@@ -74,13 +104,13 @@ const backgroundPostHogOptions: Partial<PostHogConfig> = {
 };
 
 /** Setup PostHog for the given client type */
-const setupPostHog = async ({
+async function setupPostHog({
 	posthog,
 	type,
 }: {
 	posthog: PostHog
 	type: PostHogClientType
-}) => {
+}) {
 	const userInfo = await getUserInfo();
 	posthog.init(env.VITE_PUBLIC_POSTHOG_KEY, {
 		...(type === 'ui' ? uiPostHogOptions : backgroundPostHogOptions),

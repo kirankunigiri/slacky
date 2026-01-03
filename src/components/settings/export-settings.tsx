@@ -19,7 +19,7 @@ const renderSelectOption: SelectProps['renderOption'] = ({ option, checked }) =>
 );
 
 function MessageExportSettings() {
-	const messageExportFormat = useValue(settings$.messageExportFormat);
+	const messageExportFormat = useValue(settings$.message_export_format);
 
 	return (
 		<Select
@@ -36,7 +36,7 @@ function MessageExportSettings() {
 			}]}
 			renderOption={renderSelectOption}
 			value={messageExportFormat}
-			onChange={value => settings$.messageExportFormat.set(value as MessageExportFormat)}
+			onChange={value => settings$.message_export_format.set(value as MessageExportFormat)}
 		/>
 	);
 }

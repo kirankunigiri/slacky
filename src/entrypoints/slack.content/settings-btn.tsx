@@ -3,7 +3,7 @@ import { useValue } from '@legendapp/state/react';
 import { settings$ } from '@/utils/store';
 
 function SettingsButton() {
-	const showSettingsButtonInSlack = useValue(settings$.showSettingsButtonInSlack);
+	const showSettingsButtonInSlack = useValue(settings$.show_settings_button_in_slack);
 	if (!showSettingsButtonInSlack) return null;
 
 	const handleClick = async () => {

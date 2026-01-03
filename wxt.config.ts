@@ -69,5 +69,24 @@ export default defineConfig({
 		define: {
 			'import.meta.env.VITE_PROJECT_ROOT': JSON.stringify(path.resolve(__dirname)),
 		},
+		// Required workaround for posthog - https://github.com/PostHog/posthog-js/issues/2604
+		build: {
+			minify: 'terser',
+			terserOptions: {
+				compress: {
+					drop_console: false,
+					drop_debugger: false,
+					pure_funcs: [],
+				},
+				format: {
+					ascii_only: true, // Critical: Forces ASCII-safe output
+					comments: false,
+				},
+				mangle: {
+					keep_classnames: true,
+					keep_fnames: true,
+				},
+			},
+		},
 	}),
 });
