@@ -1,5 +1,6 @@
 import { useValue } from '@legendapp/state/react';
 import { ActionIcon, Button, Checkbox, Space, TextInput, Tooltip } from '@mantine/core';
+import clsx from 'clsx';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRef } from 'react';
@@ -9,7 +10,9 @@ import { settings$ } from '@/utils/store';
 let filterIdCounter = 0;
 const MAX_DOMAIN_FILTERS = 30;
 
-function RemoveEmbedSettings() {
+function RemoveEmbedSettings(
+	{ isTutorialPage = false }: { isTutorialPage?: boolean },
+) {
 	const removeAllEmbedLinks = useValue(settings$.removeAllEmbedLinks);
 	const embedLinkFilters = useValue(settings$.embedLinkFilters);
 
@@ -47,7 +50,11 @@ function RemoveEmbedSettings() {
 	return (
 		<>
 			{/* Remove All */}
-			<div className="flex justify-between">
+			<div className={clsx(
+				'flex items-center',
+				isTutorialPage ? 'gap-4' : 'justify-between',
+			)}
+			>
 				<Checkbox
 					label="Remove all embeds"
 					id="removeAllEmbedLinks"

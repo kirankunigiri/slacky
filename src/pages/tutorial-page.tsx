@@ -27,7 +27,7 @@ function TutorialPageContent() {
 			{/* Remove Embed Links */}
 			<Section title="Remove Embed Links" description="When you include a link in a Slack message, Slack creates an embed/attachment for the message by default. This setting automatically removes these embeds. You can choose to remove all embeds, or only embeds from the domain filters you add.">
 				<div className="max-w-[400px]">
-					<RemoveEmbedSettings />
+					<RemoveEmbedSettings isTutorialPage />
 				</div>
 				<Space h="md" />
 				<div className="flex w-full justify-between gap-4">
