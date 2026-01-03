@@ -22,7 +22,7 @@ export const shadcnCssVariableResolver: CSSVariablesResolver = () => ({
 		'--mantine-color-default-hover': 'var(--mantine-color-secondary-1)', // used as default hover color
 		'--mantine-color-default-color': 'var(--mantine-color-secondary-9)', // used as default text color
 		'--mantine-color-default-border': 'var(--mantine-color-secondary-2)', // used as default border color
-		'--mantine-color-dimmed': 'var(--mantine-color-secondary-10)', // used as dimmed text color
+		'--mantine-color-dimmed': 'var(--mantine-color-secondary-5)', // used as dimmed text color
 
 		'--mantine-color-secondary-filled': 'var(--mantine-color-white)', // used as secondary surface color
 		'--mantine-color-secondary-filled-hover': 'var(--mantine-color-secondary-1)', // used as secondary hover color
