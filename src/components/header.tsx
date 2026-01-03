@@ -18,7 +18,7 @@ function Header({
 		)}
 		>
 			<AnimatedLogo />
-			<p className="text-xl font-bold">Slacky - {isTutorialPage ? 'Tutorial' : ''}</p>
+			<p className="text-xl font-bold">Slacky {isTutorialPage ? ' - Tutorial' : ''}</p>
 
 			{/* In dev mode, this hotlink opens the settings in a new tab */}
 			{import.meta.env.MODE === 'development' && !isTutorialPage && (
