@@ -15,17 +15,20 @@ import { BaseApp } from '@/pages/base-app';
 
 function TutorialPageContent() {
 	return (
-		<div className="flex max-w-[700px] flex-col px-8 py-4">
-			<div>
+		<div className="relative flex max-w-[800px] flex-col">
+			<Divider orientation="vertical" className="absolute top-0 bottom-0 left-0 z-10" />
+			<Divider orientation="vertical" className="absolute top-0 right-0 bottom-0 z-10" />
+
+			<Section withBorder={false}>
 				<Header isTutorialPage />
-				<Text size="sm" color="dimmed">Slacky is a browser extension that improves your Slack experience in the browser. This tutorial will walk you through the features and how to use them.</Text>
-				<Space h="md" />
-			</div>
+				<Text size="sm" c="dimmed">Slacky is a browser extension that improves your Slack experience in the browser. This tutorial will walk you through the features and how to use them. You can customize which features are enabled.</Text>
+				{/* <Space h="md" /> */}
+			</Section>
 
 			{/* Remove Embed Links */}
 			<Section>
 				<Text size="lg" fw="bold">Remove Embed Links</Text>
-				<Text size="sm" color="dimmed">When you include a link in a Slack message, Slack creates an embed/attachment for the message by default. This setting automatically removes these embeds. You can choose to remove all embeds, or only embeds from the domain filters you add.</Text>
+				<Text size="sm" c="dimmed">When you include a link in a Slack message, Slack creates an embed/attachment for the message by default. This setting automatically removes these embeds. You can choose to remove all embeds, or only embeds from the domain filters you add.</Text>
 				<Space h="md" />
 				<div className="max-w-[400px]">
 					<RemoveEmbedSettings />
@@ -40,7 +43,7 @@ function TutorialPageContent() {
 			{/* Auto-confirm embed removal */}
 			<Section>
 				<Text size="lg" fw="bold">Auto-confirm embed removal</Text>
-				<Text size="sm" color="dimmed">If you don&apos;t have &quot;remove embed links&quot; enabled, you can still remove embeds manually, but Slack always shows a confirmation dialog. This setting automatically confirms the dialog for you.</Text>
+				<Text size="sm" c="dimmed">If you don&apos;t have &quot;remove embed links&quot; enabled, you can still remove embeds manually, but Slack always shows a confirmation dialog. This setting automatically confirms the dialog for you.</Text>
 				<Space h="md" />
 				<SettingAutoConfirmEmbedRemoval />
 				<Space h="md" />
@@ -53,27 +56,17 @@ function TutorialPageContent() {
 			{/* Open Slack links in browser */}
 			<Section>
 				<Text size="lg" fw="bold">Open Slack links in browser</Text>
-				<Text size="sm" color="dimmed">When opening a Slack link in the browser, Slack always asks to open the desktop app. This setting automatically opens the web version instead.</Text>
+				<Text size="sm" c="dimmed">When opening a Slack link in the browser, Slack always asks to open the desktop app. This setting automatically opens the web version instead.</Text>
 				<Space h="md" />
 				<SettingOpenSlackLinksInBrowser />
 				<Space h="md" />
 				<LightboxImage src="https://i.imgur.com/Q5OIUgs.png" width={984} height={1026} className="max-h-[350px]" />
 			</Section>
 
-			{/* Show settings button in Slack */}
-			<Section>
-				<Text size="lg" fw="bold">Show settings button in Slack</Text>
-				<Text size="sm" color="dimmed">The Slacky settings button will appear in the top right corner of the Slack web app. Clicking it will open the settings.</Text>
-				<Space h="md" />
-				<SettingShowSettingsButtonInSlack />
-				<Space h="md" />
-				<LightboxImage src="https://i.imgur.com/35yKnHM.png" width={863} height={304} className="max-h-[150px]" />
-			</Section>
-
 			{/* Message Export */}
 			<Section>
 				<Text size="lg" fw="bold">Message Export</Text>
-				<Text size="sm" color="dimmed">A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard as markdown, or download as a markdown file.</Text>
+				<Text size="sm" c="dimmed">A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard as markdown, or download as a markdown file.</Text>
 				<Space h="md" />
 				<div className="flex max-w-[200px] flex-col gap-1.5">
 					<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
@@ -81,6 +74,16 @@ function TutorialPageContent() {
 				</div>
 				<Space h="md" />
 				<LightboxImage src="https://i.imgur.com/BuHZCKG.png" width={1450} height={270} />
+			</Section>
+
+			{/* Show settings button in Slack */}
+			<Section>
+				<Text size="lg" fw="bold">Show settings button in Slack</Text>
+				<Text size="sm" c="dimmed">The Slacky settings button will appear in the top right corner of the Slack web app. Clicking it will open the settings.</Text>
+				<Space h="md" />
+				<SettingShowSettingsButtonInSlack />
+				<Space h="md" />
+				<LightboxImage src="https://i.imgur.com/35yKnHM.png" width={863} height={304} className="max-h-[150px]" />
 			</Section>
 
 			{/* Contributing & Feature Requests */}
@@ -112,18 +115,30 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 	</BaseApp>,
 );
 
-function Section({ children }: { children: React.ReactNode }) {
+function Section({ withBorder = true, children }: { withBorder?: boolean, children: React.ReactNode }) {
 	return (
-		<div>
-			{/* TODO: Test vertical line square off vs. cards */}
-			{/* <Divider variant="solid" className="mx-[-20px]" /> */}
-			<Divider variant="dashed" />
+		<div className="bg-black/1! dark:bg-white/5!">
+			{withBorder && <Divider variant="solid" />}
 			<Space h="3xl" />
-			{children}
+			<div className="px-12">
+				{children}
+			</div>
 			<Space h="3xl" />
 		</div>
 	);
 }
+
+// An alternate card version of the section component
+// function Section({ children }: { children: React.ReactNode }) {
+// 	return (
+// 		<div className="px-12">
+// 			<Card shadow="sm" padding="lg" radius="sm" withBorder className="border! border-white/20! bg-white/5!">
+// 				{children}
+// 			</Card>
+// 			<Space h="xl" />
+// 		</div>
+// 	);
+// }
 
 function LightboxImage({ src, width, height, className, caption }: { src: string, width: number, height: number, className?: string, caption?: string }) {
 	return (

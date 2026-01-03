@@ -13,8 +13,8 @@ function Header({
 
 	return (
 		<div className={clsx(
-			'flex items-center gap-1 pt-3 pb-3',
-			!isTutorialPage && 'px-5',
+			'flex items-center gap-1 pb-3',
+			!isTutorialPage && 'px-5 pt-3',
 		)}
 		>
 			<AnimatedLogo />
