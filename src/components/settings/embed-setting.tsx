@@ -27,12 +27,14 @@ function FilterInput({
 	filterKey,
 	onUpdate,
 	onRemove,
+	autoFocus,
 }: {
 	filter: string
 	index: number
 	filterKey: number
 	onUpdate: (index: number, value: string) => void
 	onRemove: (index: number) => void
+	autoFocus?: boolean
 }) {
 	const [localValue, setLocalValue] = useState(filter);
 	const [hasBlurred, setHasBlurred] = useState(false);
@@ -68,6 +70,7 @@ function FilterInput({
 			)}
 		>
 			<TextInput
+				autoFocus={autoFocus}
 				variant="unstyled"
 				value={localValue}
 				onChange={handleChange}
@@ -182,6 +185,7 @@ function RemoveEmbedSettings(
 										filterKey={filterIdsRef.current[index]}
 										onUpdate={updateFilter}
 										onRemove={removeFilter}
+										autoFocus={filter === '' && index === embedLinkFilters.length - 1}
 									/>
 								))}
 							</AnimatePresence>

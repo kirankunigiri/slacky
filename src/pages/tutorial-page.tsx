@@ -54,7 +54,7 @@ function TutorialPageContent() {
 			</Section>
 
 			{/* Message Export */}
-			<Section title="Message Export" description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard as markdown, or download as a markdown file.">
+			<Section title="Message Export" description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard or download a markdown file.">
 				<div className="flex max-w-[200px] flex-col gap-1.5">
 					<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
 					<MessageExportSettings />
