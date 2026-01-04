@@ -22,8 +22,16 @@ a {
 	cursor: inherit
 }
 
+/* Reduces gap between cance/confirm buttons in modal */
 .mantine-Group-root {
 	gap: 0.5rem;
+}
+
+/* Combobox / Select Dropdown Options */
+.mantine-Select-option {
+	&:where([data-combobox-selected]) {
+		background-color: var(--mantine-color-default-hover);
+	}
 }
 
 /* Scroll shadows - appear only when not at top/bottom edge */
