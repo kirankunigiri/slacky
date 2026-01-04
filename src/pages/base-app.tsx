@@ -1,4 +1,5 @@
 import { MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
 import React, { lazy, Suspense } from 'react';
 
 import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
@@ -25,7 +26,11 @@ export function BaseApp({ children }: { children: React.ReactNode }) {
 					theme={shadcnTheme}
 					cssVariablesResolver={shadcnCssVariableResolver}
 				>
-					{children}
+					<ModalsProvider>
+						<div className="flex justify-center">
+							{children}
+						</div>
+					</ModalsProvider>
 				</MantineProvider>
 			</AnalyticsProvider>
 		</React.StrictMode>

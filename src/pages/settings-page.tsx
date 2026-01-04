@@ -18,7 +18,9 @@ function SettingsPageImpl() {
 		);
 	}
 
-	return <SettingsPageContent />;
+	return (
+		<SettingsPageContent />
+	);
 }
 const SettingsPage = withSettingsLoaded(SettingsPageImpl);
 

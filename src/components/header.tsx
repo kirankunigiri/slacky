@@ -1,8 +1,10 @@
-import { ActionIcon, Badge, Tooltip, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, Badge, Text, Tooltip, useMantineColorScheme } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import { clsx } from 'clsx';
 import { Moon, RotateCw, Sun } from 'lucide-react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
+import { ph } from '@/utils/analytics';
 
 function Header({
 	isTutorialPage = false,
@@ -10,6 +12,31 @@ function Header({
 	isTutorialPage?: boolean
 }) {
 	const { toggleColorScheme, colorScheme } = useMantineColorScheme();
+	const openModal = () => modals.openConfirmModal({
+		centered: true,
+		title: 'Reset to default settings',
+		children: (
+			<Text size="sm">
+				Are you sure you want to clear all settings and reset to the defaults? This action cannot be undone.
+			</Text>
+		),
+		confirmProps: {
+			leftSection: <RotateCw className="size-3.5" />,
+			color: 'red',
+			size: 'xs',
+			variant: 'filled',
+		},
+		cancelProps: {
+			size: 'xs',
+			variant: 'subtle',
+		},
+		labels: { confirm: 'Reset', cancel: 'Cancel' },
+		onConfirm: () => {
+			browser.storage.local.clear();
+			// TODO: Update user profile with default settings
+			ph.capture('settings_reset');
+		},
+	});
 
 	return (
 		<div className={clsx(
@@ -34,7 +61,7 @@ function Header({
 				</Badge>
 			)}
 
-			{/* Devtools */}
+			{/* Theme + Reset storage */}
 			<div className="ml-auto" />
 			<div className="flex gap-1">
 				{/* Toggle theme */}
@@ -45,14 +72,12 @@ function Header({
 				</Tooltip>
 
 				{/* Clear storage */}
-				<Tooltip label="Clear storage">
+				<Tooltip label="Reset to default settings">
 					<ActionIcon
 						color="red"
 						className="w-full"
 						variant="light"
-						onClick={() => {
-							browser.storage.local.clear();
-						}}
+						onClick={openModal}
 					><RotateCw className="size-3.5" />
 					</ActionIcon>
 				</Tooltip>

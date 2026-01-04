@@ -5,14 +5,7 @@
 @custom-variant dark (&:where([data-mantine-color-scheme=dark], [data-mantine-color-scheme=dark] *));
 
 :root {
-	display: flex;
-	justify-content: center;
 	--mantine-color-body: light-dark(white, black) !important;
-}
-
-body {
-	margin: 0 auto;
-	--font-size-xs: 2rem !important;
 }
 
 a {
@@ -27,6 +20,10 @@ a {
 	text-transform: none !important;
 	letter-spacing: inherit !important;
 	cursor: inherit
+}
+
+.mantine-Group-root {
+	gap: 0.5rem;
 }
 
 /* Scroll shadows - appear only when not at top/bottom edge */
