@@ -1,3 +1,4 @@
+import { getBackgroundService } from '@/utils/messaging';
 import { settings$ } from '@/utils/store';
 
 /** Checks if a URL's hostname matches a domain filter (including subdomains) */
@@ -31,7 +32,8 @@ const removeEmbeds = () => {
 		const removeAllEmbedLinks = settings$.remove_all_embed_links.get();
 		const embedLinkFilters = settings$.embed_link_filters.get().filter(filter => filter !== '');
 
-		if (!removeAllEmbedLinks && !embedLinkFilters.some(filter => matchesDomainFilter(href, filter))) {
+		const matchedFilter = embedLinkFilters.find(filter => matchesDomainFilter(href, filter));
+		if (!removeAllEmbedLinks && !matchedFilter) {
 			return;
 		}
 
@@ -40,6 +42,19 @@ const removeEmbeds = () => {
 		if (deleteButton) {
 			extensionInitiatedRemoval = true;
 			deleteButton.click();
+
+			// Track embed removal
+			try {
+				const url = new URL(href);
+				getBackgroundService().trackEvent({
+					eventName: 'embed_link_removed',
+					eventProperties: {
+						url: href,
+						domain: url.hostname,
+						setting_used: removeAllEmbedLinks ? 'remove_all_embed_links' : 'embed_link_filters',
+					},
+				});
+			} catch { /* empty */ }
 		}
 	}
 
@@ -48,6 +63,14 @@ const removeEmbeds = () => {
 		// Auto-confirm if extension initiated the removal, or if autoConfirmEmbedRemoval is enabled for manual removals
 		if (extensionInitiatedRemoval || settings$.auto_confirm_embed_removal.get()) {
 			confirmButton.click();
+
+			// Track when user manually clicked delete and auto-confirm kicked in
+			if (!extensionInitiatedRemoval) {
+				getBackgroundService().trackEvent({
+					eventName: 'auto_confirmed_embed_removal',
+				});
+			}
+
 			extensionInitiatedRemoval = false; // Reset flag after confirming
 		}
 	}

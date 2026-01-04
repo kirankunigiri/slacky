@@ -208,6 +208,8 @@ interface MessagesExportedEvent {
 	eventProperties: {
 		type: 'channel' | 'thread'
 		exportFormat: Exclude<MessageExportFormat, 'disabled'>
+		message_count: number
+		export_duration: number
 	}
 	userProperties?: undefined
 }
@@ -223,8 +225,14 @@ interface EmbedLinkRemovedEvent {
 	eventProperties: {
 		url: string
 		domain: string
-		setting_used: 'remove_all_embed_links' | 'embed_link_filters' | 'auto_confirm_embed_removal'
+		setting_used: 'remove_all_embed_links' | 'embed_link_filters'
 	}
+	userProperties?: undefined
+}
+
+interface AutoConfirmedEmbedRemovalEvent {
+	eventName: 'auto_confirmed_embed_removal'
+	eventProperties?: undefined
 	userProperties?: undefined
 }
 
@@ -235,7 +243,8 @@ export type TrackEventArgs = SettingUpdatedEvent
 	| LinkClickedEvent
 	| MessagesExportedEvent
 	| EmbedLinkRemovedEvent
-	| SkippedAppRedirectEvent;
+	| SkippedAppRedirectEvent
+	| AutoConfirmedEmbedRemovalEvent;
 
 /**
  * Type-safe event tracking wrapper for PostHog

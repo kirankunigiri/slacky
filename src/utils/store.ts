@@ -1,8 +1,6 @@
 import { observable, syncState, when } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 
-import { ph } from '@/utils/analytics';
-
 export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
 
 /** Settings stored in Chrome storage */

@@ -1,3 +1,5 @@
+import { getBackgroundService } from '@/utils/messaging';
+
 /**
  * Slack Message Exporter - export all message in a channel or thread
  * - Scrolling is required because the message lists are virtualized
@@ -15,6 +17,7 @@ const SELECTORS = {
 } as const;
 
 export const exportMessages = async ({ type, exportFormat }: ExportMessagesOptions) => {
+	const startTime = performance.now();
 	document.body.click();
 
 	const allMessages = new Map();
@@ -192,7 +195,19 @@ export const exportMessages = async ({ type, exportFormat }: ExportMessagesOptio
 	} else if (exportFormat === 'clipboard') {
 		// Copy to clipboard
 		await navigator.clipboard.writeText(formattedText);
+	} else {
+		throw new Error(`Invalid export format: ${exportFormat}`);
 	}
 
-	throw new Error(`Invalid export format: ${exportFormat}`);
+	// Track the export event
+	const exportDuration = (performance.now() - startTime) / 1000;
+	getBackgroundService().trackEvent({
+		eventName: 'messages_exported',
+		eventProperties: {
+			type,
+			exportFormat,
+			message_count: messages.length,
+			export_duration: Math.round(exportDuration * 100) / 100,
+		},
+	});
 };

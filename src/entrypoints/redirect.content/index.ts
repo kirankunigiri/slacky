@@ -1,3 +1,5 @@
+import { getBackgroundService } from '@/utils/messaging';
+
 /** Opens the browser Slack link immediately when visiting /archives links that try to open the desktop app */
 export default defineContentScript({
 	matches: ['*://*.slack.com/archives/*'],
@@ -45,6 +47,7 @@ const findAndOpenBrowserSlackLink = async () => {
 		if (link.getAttribute('href')?.startsWith('/messages/')) {
 			const href = link.getAttribute('href');
 			if (href) {
+				getBackgroundService().trackEvent({ eventName: 'skipped_app_redirect' });
 				window.location.href = href;
 				return true;
 			}
