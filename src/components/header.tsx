@@ -4,7 +4,6 @@ import { clsx } from 'clsx';
 import { Moon, RotateCw, Sun } from 'lucide-react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
-import { ph } from '@/utils/analytics';
 import { defaultSettingsProperties } from '@/utils/store';
 
 function Header({

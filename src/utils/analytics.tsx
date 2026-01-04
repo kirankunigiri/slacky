@@ -18,7 +18,8 @@ import { defaultSettingsPropertiesWithTheme } from '@/utils/store';
 export const ph = new PostHog();
 const disableAnalytics = import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS;
 if (!disableAnalytics) {
-	setupPostHog({ posthog: ph, type: 'ui' });
+	const scriptType = typeof document !== 'undefined' ? 'ui' : 'background';
+	setupPostHog({ posthog: ph, type: scriptType });
 }
 
 /** React provider for PostHog */
@@ -196,8 +197,45 @@ interface LinkClickedEvent {
 	userProperties?: undefined
 }
 
+interface SlackyButtonClickedEvent {
+	eventName: 'slacky_button_clicked'
+	eventProperties?: undefined
+	userProperties?: undefined
+}
+
+interface MessagesExportedEvent {
+	eventName: 'messages_exported'
+	eventProperties: {
+		type: 'channel' | 'thread'
+		exportFormat: Exclude<MessageExportFormat, 'disabled'>
+	}
+	userProperties?: undefined
+}
+
+interface SkippedAppRedirectEvent {
+	eventName: 'skipped_app_redirect'
+	eventProperties?: undefined
+	userProperties?: undefined
+}
+
+interface EmbedLinkRemovedEvent {
+	eventName: 'embed_link_removed'
+	eventProperties: {
+		url: string
+		domain: string
+		setting_used: 'remove_all_embed_links' | 'embed_link_filters' | 'auto_confirm_embed_removal'
+	}
+	userProperties?: undefined
+}
+
 // Merged trackable events type
-type TrackEventArgs = SettingUpdatedEvent | SettingsResetEvent | LinkClickedEvent;
+export type TrackEventArgs = SettingUpdatedEvent
+	| SettingsResetEvent
+	| SlackyButtonClickedEvent
+	| LinkClickedEvent
+	| MessagesExportedEvent
+	| EmbedLinkRemovedEvent
+	| SkippedAppRedirectEvent;
 
 /**
  * Type-safe event tracking wrapper for PostHog

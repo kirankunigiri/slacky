@@ -6,18 +6,6 @@ function SettingsButton() {
 	const showSettingsButtonInSlack = useValue(settings$.show_settings_button_in_slack);
 	if (!showSettingsButtonInSlack) return null;
 
-	const handleClick = async () => {
-		const errMsg = 'Failed to open popup';
-		try {
-			const response = await browser.runtime.sendMessage({ action: 'openPopup' });
-			if (!response.success) {
-				console.error(errMsg, response.error);
-			}
-		} catch (error) {
-			console.error(errMsg, error);
-		}
-	};
-
 	return (
 		<button
 			style={{ marginRight: '4px' }}
@@ -28,7 +16,7 @@ function SettingsButton() {
 			data-sk="tooltip_parent"
 			type="button"
 			tabIndex={-1}
-			onClick={handleClick}
+			onClick={() => getBackgroundService().openPopup()}
 		>
 			<div style={{ width: '20px', height: '20px', display: 'inline-block' }}>
 				<svg width="100%" height="100%" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
