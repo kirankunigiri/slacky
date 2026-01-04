@@ -5,6 +5,7 @@ import { Moon, RotateCw, Sun } from 'lucide-react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
 import { ph } from '@/utils/analytics';
+import { defaultSettingsProperties } from '@/utils/store';
 
 function Header({
 	isTutorialPage = false,
@@ -12,31 +13,6 @@ function Header({
 	isTutorialPage?: boolean
 }) {
 	const { toggleColorScheme, colorScheme } = useMantineColorScheme();
-	const openModal = () => modals.openConfirmModal({
-		centered: true,
-		title: 'Reset to default settings',
-		children: (
-			<Text size="sm">
-				Are you sure you want to clear all settings and reset to the defaults? This action cannot be undone.
-			</Text>
-		),
-		confirmProps: {
-			leftSection: <RotateCw className="size-3.5" />,
-			color: 'red',
-			size: 'xs',
-			variant: 'filled',
-		},
-		cancelProps: {
-			size: 'xs',
-			variant: 'subtle',
-		},
-		labels: { confirm: 'Reset', cancel: 'Cancel' },
-		onConfirm: () => {
-			browser.storage.local.clear();
-			// TODO: Update user profile with default settings
-			ph.capture('settings_reset');
-		},
-	});
 
 	return (
 		<div className={clsx(
@@ -61,23 +37,36 @@ function Header({
 				</Badge>
 			)}
 
-			{/* Theme + Reset storage */}
+			{/* Theme + Reset settings */}
 			<div className="ml-auto" />
 			<div className="flex gap-1">
 				{/* Toggle theme */}
 				<Tooltip label="Toggle theme">
-					<ActionIcon variant="light" onClick={toggleColorScheme}>
+					<ActionIcon
+						variant="light"
+						onClick={() => {
+							toggleColorScheme();
+							const newColorScheme = colorScheme === 'dark' ? 'light' : 'dark';
+							ph.capture('setting_updated', {
+								setting: 'theme',
+								value: newColorScheme,
+								$set: {
+									setting_theme: newColorScheme,
+								},
+							});
+						}}
+					>
 						{colorScheme === 'dark' ? <Moon className="size-4" /> : <Sun className="size-4" />}
 					</ActionIcon>
 				</Tooltip>
 
-				{/* Clear storage */}
+				{/* Reset settings to default - clears localstorage */}
 				<Tooltip label="Reset to default settings">
 					<ActionIcon
 						color="red"
 						className="w-full"
 						variant="light"
-						onClick={openModal}
+						onClick={openConfirmResetSettingsModal}
 					><RotateCw className="size-3.5" />
 					</ActionIcon>
 				</Tooltip>
@@ -85,5 +74,32 @@ function Header({
 		</div>
 	);
 }
+
+const openConfirmResetSettingsModal = () => modals.openConfirmModal({
+	centered: true,
+	title: 'Reset to default settings',
+	children: (
+		<Text size="sm">
+			Are you sure you want to clear all settings and reset to the defaults? This action cannot be undone.
+		</Text>
+	),
+	confirmProps: {
+		leftSection: <RotateCw className="size-3.5" />,
+		color: 'red',
+		size: 'xs',
+		variant: 'filled',
+	},
+	cancelProps: {
+		size: 'xs',
+		variant: 'subtle',
+	},
+	labels: { confirm: 'Reset', cancel: 'Cancel' },
+	onConfirm: () => {
+		browser.storage.local.clear();
+		ph.capture('settings_reset', {
+			$set: defaultSettingsProperties,
+		});
+	},
+});
 
 export default Header;

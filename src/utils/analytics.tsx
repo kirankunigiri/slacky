@@ -8,6 +8,7 @@ import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import { v7 as uuidv7 } from 'uuid';
 
 import { clientEnv as env } from '@/utils/client-env';
+import { defaultSettingsPropertiesWithTheme } from '@/utils/store';
 
 /**
  * Setup analytics using PostHog
@@ -119,16 +120,25 @@ async function setupPostHog({
 		},
 		person_profiles: 'always',
 	});
-	if (userInfo.isDevUser) {
-		posthog.setPersonProperties(undefined, {
-			is_dev_user: true,
-		});
+
+	// Set initial person properties
+	if (userInfo.isNewUser) {
+		// dev user property - set_once
+		if (userInfo.isDevUser) {
+			posthog.setPersonProperties(undefined, {
+				is_dev_user: true,
+			});
+		}
+
+		// default settings properties - set
+		posthog.setPersonProperties(defaultSettingsPropertiesWithTheme);
 	}
 };
 
 interface UserInfo {
 	userId: string
 	isDevUser: boolean
+	isNewUser: boolean
 }
 
 /**
@@ -142,6 +152,7 @@ const getUserInfo = async (): Promise<UserInfo> => {
 		return {
 			userId: stored.userId,
 			isDevUser: stored.userId.startsWith('dev_'),
+			isNewUser: false,
 		};
 	}
 
@@ -156,5 +167,5 @@ const getUserInfo = async (): Promise<UserInfo> => {
 
 	const userId = `${devUsernamePrefix}${uuidv7()}`;
 	await browser.storage.local.set({ userId: userId });
-	return { userId, isDevUser };
+	return { userId, isDevUser, isNewUser: true };
 };
