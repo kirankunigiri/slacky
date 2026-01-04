@@ -58,10 +58,13 @@ export const settings$ = observable<Settings>(
 			for (const change of changes) {
 				const changePath = change.path[0];
 				const changeValue = value[changePath as keyof Settings];
-				ph.capture('setting_updated', {
-					setting: changePath,
-					value: changeValue,
-					$set: { [`setting_${changePath}`]: changeValue },
+				trackEvent({
+					eventName: 'setting_updated',
+					eventProperties: {
+						setting: changePath,
+						value: changeValue,
+					},
+					userProperties: { [`setting_${changePath}`]: changeValue },
 				});
 			}
 			await storage.setItem(STORAGE_KEY, JSON.stringify(value));

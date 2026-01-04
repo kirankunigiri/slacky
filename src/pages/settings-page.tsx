@@ -7,6 +7,7 @@ import RemoveEmbedSettings from '@/components/settings/embed-setting';
 import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
 import { BaseApp } from '@/pages/base-app';
+import { trackEvent } from '@/utils/analytics';
 
 function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');
@@ -78,6 +79,7 @@ function SettingsPageContent() {
 					rel="noreferrer"
 					variant="dot"
 					color="blue"
+					onClick={() => trackEvent({ eventName: 'link_clicked', eventProperties: { type: 'tutorial' } })}
 				>
 					View tutorial
 				</Badge>

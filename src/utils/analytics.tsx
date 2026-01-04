@@ -169,3 +169,44 @@ async function getUserInfo(): Promise<UserInfo> {
 	await browser.storage.local.set({ userId: userId });
 	return { userId, isDevUser, isNewUser: true };
 };
+
+// Types for all trackable events
+// Each event type specifies its required eventProperties and userProperties
+interface SettingUpdatedEvent {
+	eventName: 'setting_updated'
+	eventProperties: {
+		setting: string
+		value: unknown
+	}
+	userProperties: Record<`setting_${string}`, unknown>
+}
+
+interface SettingsResetEvent {
+	eventName: 'settings_reset'
+	eventProperties?: undefined
+	userProperties: Record<`setting_${string}`, unknown>
+}
+
+/** Links clicked in the footer */
+interface LinkClickedEvent {
+	eventName: 'link_clicked'
+	eventProperties: {
+		type: 'new_github_issue' | 'author' | 'tutorial'
+	}
+	userProperties?: undefined
+}
+
+// Merged trackable events type
+type TrackEventArgs = SettingUpdatedEvent | SettingsResetEvent | LinkClickedEvent;
+
+/**
+ * Type-safe event tracking wrapper for PostHog
+ * Based on eventName, enforce the correct properties
+ */
+export const trackEvent = (args: TrackEventArgs) => {
+	const { eventName, eventProperties, userProperties } = args;
+	ph.capture(eventName, {
+		...eventProperties,
+		...(userProperties && { $set: userProperties }),
+	});
+};

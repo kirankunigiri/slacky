@@ -47,12 +47,13 @@ function Header({
 						onClick={() => {
 							toggleColorScheme();
 							const newColorScheme = colorScheme === 'dark' ? 'light' : 'dark';
-							ph.capture('setting_updated', {
-								setting: 'theme',
-								value: newColorScheme,
-								$set: {
-									setting_theme: newColorScheme,
+							trackEvent({
+								eventName: 'setting_updated',
+								eventProperties: {
+									setting: 'theme',
+									value: newColorScheme,
 								},
+								userProperties: { setting_theme: newColorScheme },
 							});
 						}}
 					>
@@ -96,8 +97,9 @@ const openConfirmResetSettingsModal = () => modals.openConfirmModal({
 	labels: { confirm: 'Reset', cancel: 'Cancel' },
 	onConfirm: () => {
 		browser.storage.local.clear();
-		ph.capture('settings_reset', {
-			$set: defaultSettingsProperties,
+		trackEvent({
+			eventName: 'settings_reset',
+			userProperties: defaultSettingsProperties,
 		});
 	},
 });

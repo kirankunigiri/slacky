@@ -12,6 +12,7 @@ import RemoveEmbedSettings from '@/components/settings/embed-setting';
 import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
 import { BaseApp } from '@/pages/base-app';
+import { trackEvent } from '@/utils/analytics';
 
 function TutorialPageContent() {
 	return (
@@ -82,9 +83,10 @@ function TutorialPageContent() {
 					<Button
 						leftSection={<IconBrandGithub />}
 						component="a"
-						href="https://github.com/kirankunigiri/slacky"
+						href="https://github.com/kirankunigiri/slacky/issues/new"
 						target="_blank"
 						rel="noreferrer"
+						onClick={() => trackEvent({ eventName: 'link_clicked', eventProperties: { type: 'new_github_issue' } })}
 					>GitHub
 					</Button>
 					<Credits />
