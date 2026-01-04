@@ -18,23 +18,29 @@ const renderSelectOption: SelectProps['renderOption'] = ({ option, checked }) =>
 	</Group>
 );
 
+const exportFormatSelectOptions: {
+	value: MessageExportFormat
+	label: string
+}[] = [{
+	value: 'clipboard',
+	label: 'Clipboard',
+}, {
+	value: 'markdown_file',
+	label: 'Markdown File',
+}, {
+	value: 'disabled',
+	label: 'Disabled',
+}];
+
 function MessageExportSettings() {
 	const messageExportFormat = useValue(settings$.message_export_format);
 
 	return (
 		<Select
 			size="sm"
-			data={[{
-				value: 'clipboard',
-				label: 'Clipboard',
-			}, {
-				value: 'markdown_file',
-				label: 'Markdown File',
-			}, {
-				value: 'disabled',
-				label: 'Disabled',
-			}]}
+			data={exportFormatSelectOptions}
 			renderOption={renderSelectOption}
+			leftSection={messageExportFormat ? icons[messageExportFormat] : null}
 			value={messageExportFormat}
 			onChange={value => settings$.message_export_format.set(value as MessageExportFormat)}
 		/>
