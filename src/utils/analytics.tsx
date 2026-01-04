@@ -145,7 +145,7 @@ interface UserInfo {
  * Get user id and dev user status
  * Dev users are identified by a prefix in the user id
  */
-const getUserInfo = async (): Promise<UserInfo> => {
+async function getUserInfo(): Promise<UserInfo> {
 	let isDevUser = false;
 	const stored = await browser.storage.local.get<{ userId: string }>('userId');
 	if (stored.userId) {
