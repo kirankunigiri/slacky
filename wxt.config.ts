@@ -24,6 +24,7 @@ export default defineConfig({
 			: undefined;
 
 		return {
+			version: '1.0',
 			permissions: ['storage'],
 			content_security_policy: {
 				extension_pages: extensionPagesCsp,
