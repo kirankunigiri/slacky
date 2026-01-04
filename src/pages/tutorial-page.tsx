@@ -125,6 +125,9 @@ function LightboxImage({ src, width, height, className, caption }: { src: string
 		<Gallery options={{
 			imageClickAction: 'close',
 			tapAction: 'close',
+			showHideAnimationType: 'zoom',
+			hideAnimationDuration: 200,
+			showAnimationDuration: 200,
 		}}
 		>
 			<Item
