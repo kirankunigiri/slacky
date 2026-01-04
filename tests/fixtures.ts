@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const pathToExtension = path.join(__dirname, '..', '.output', 'chrome-mv3');
+const pathToExtension = path.join(__dirname, '..', '.output', 'test-build');
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
 export const test = base.extend<{

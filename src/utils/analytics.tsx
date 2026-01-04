@@ -16,7 +16,7 @@ import { defaultSettingsPropertiesWithTheme } from '@/utils/store';
  */
 
 export const ph = new PostHog();
-const disableAnalytics = import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS;
+const disableAnalytics = import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
 if (!disableAnalytics) {
 	const scriptType = typeof document !== 'undefined' ? 'ui' : 'background';
 	setupPostHog({ posthog: ph, type: scriptType });

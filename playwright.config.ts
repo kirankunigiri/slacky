@@ -4,11 +4,10 @@ import './tests/test-env';
 
 import { defineConfig, devices } from '@playwright/test';
 
-// TODO: Build latest extension before running tests
-
 /** See https://playwright.dev/docs/test-configuration. */
 export default defineConfig({
 	testDir: './tests',
+	globalSetup: './tests/build.setup.ts',
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
@@ -29,6 +28,7 @@ export default defineConfig({
 		// Setup project
 		{ name: 'setup', testMatch: /.*\.setup\.ts/ },
 
+		// Playwright only supports loading extensions for Chrome. Firefox & Safari are not supported.
 		{
 			name: 'chromium',
 			use: {
@@ -37,23 +37,5 @@ export default defineConfig({
 			},
 			dependencies: ['setup'],
 		},
-
-		// {
-		// 	name: 'firefox',
-		// 	use: {
-		// 		...devices['Desktop Firefox'],
-		// 		storageState: 'playwright/.auth/user.json',
-		// 	},
-		// 	dependencies: ['setup'],
-		// },
-
-		// {
-		// 	name: 'webkit',
-		// 	use: {
-		// 		...devices['Desktop Safari'],
-		// 		storageState: 'playwright/.auth/user.json',
-		// 	},
-		// 	dependencies: ['setup'],
-		// },
 	],
 });

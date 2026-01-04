@@ -3,8 +3,11 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { defineConfig } from 'wxt';
 
+const isTestBuild = process.env.VITE_IS_TEST_BUILD === 'true';
+
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+	outDirTemplate: isTestBuild ? 'test-build' : '{{browser}}-mv{{manifestVersion}}{{modeSuffix}}',
 	manifest: async ({ mode }) => {
 		const isDev = mode === 'development';
 
