@@ -6,20 +6,20 @@ export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
 /** Settings stored in Chrome storage */
 interface Settings {
 	remove_all_embed_links: boolean
-	open_slack_links_in_browser: boolean
-	auto_confirm_embed_removal: boolean
-	show_settings_button_in_slack: boolean
 	embed_link_filters: string[]
+	auto_confirm_embed_removal: boolean
+	open_slack_links_in_browser: boolean
 	message_export_format: MessageExportFormat
+	show_settings_button_in_slack: boolean
 }
 
 export const defaultSettings = {
 	remove_all_embed_links: false,
-	open_slack_links_in_browser: true,
-	auto_confirm_embed_removal: true,
-	show_settings_button_in_slack: true,
 	embed_link_filters: [],
+	auto_confirm_embed_removal: true,
+	open_slack_links_in_browser: true,
 	message_export_format: 'clipboard',
+	show_settings_button_in_slack: true,
 } as const satisfies Settings;
 
 export const defaultSettingsProperties = Object.fromEntries(
