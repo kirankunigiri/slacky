@@ -1,6 +1,7 @@
 import 'photoswipe/dist/photoswipe.css';
 
-import { Button, Divider, Space, Text } from '@mantine/core';
+import { useValue } from '@legendapp/state/react';
+import { Badge, Button, Divider, Space, Text } from '@mantine/core';
 import { IconBrandGithub } from '@tabler/icons-react';
 import ReactDOM from 'react-dom/client';
 import { Gallery, Item } from 'react-photoswipe-gallery';
@@ -26,7 +27,11 @@ function TutorialPageContent() {
 			</Section>
 
 			{/* Remove Embed Links */}
-			<Section title="Remove Embed Links" description="When you include a link in a Slack message, Slack creates an embed/attachment for the message by default. This setting automatically removes these embeds. You can choose to remove all embeds, or only embeds from the domain filters you add.">
+			<Section
+				title="Remove Embed Links"
+				description="When you include a link in a Slack message, Slack creates an embed/attachment for the message by default. This setting automatically removes these embeds. You can choose to remove all embeds, or only embeds from the domain filters you add."
+				settingName="remove_embeds"
+			>
 				<div className="max-w-[400px]">
 					<RemoveEmbedSettings isTutorialPage />
 				</div>
@@ -38,7 +43,11 @@ function TutorialPageContent() {
 			</Section>
 
 			{/* Auto-confirm embed removal */}
-			<Section title="Auto-confirm embed removal" description="If you don't have 'remove embed links' enabled, you can still remove embeds manually, but Slack always shows a confirmation dialog. This setting automatically confirms the dialog for you.">
+			<Section
+				title="Auto-confirm embed removal"
+				description="If you don't have 'remove embed links' enabled, you can still remove embeds manually, but Slack always shows a confirmation dialog. This setting automatically confirms the dialog for you."
+				settingName="auto_confirm_embed_removal"
+			>
 				<SettingAutoConfirmEmbedRemoval />
 				<Space h="md" />
 				<div className="flex w-full justify-between gap-4">
@@ -48,14 +57,22 @@ function TutorialPageContent() {
 			</Section>
 
 			{/* Open Slack links in browser */}
-			<Section title="Open Slack links in browser" description="When opening a Slack link in the browser, Slack always asks to open the desktop app. This setting automatically opens the web version instead.">
+			<Section
+				title="Open Slack links in browser"
+				description="When opening a Slack link in the browser, Slack always asks to open the desktop app. This setting automatically opens the web version instead."
+				settingName="open_slack_links_in_browser"
+			>
 				<SettingOpenSlackLinksInBrowser />
 				<Space h="md" />
 				<LightboxImage src="https://i.imgur.com/Q5OIUgs.png" width={984} height={1026} className="max-h-[350px]" />
 			</Section>
 
 			{/* Message Export */}
-			<Section title="Message Export" description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard or download a markdown file.">
+			<Section
+				title="Message Export"
+				description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard or download a markdown file."
+				settingName="message_export_format"
+			>
 				<div className="flex max-w-[200px] flex-col gap-1.5">
 					<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
 					<MessageExportSettings />
@@ -96,7 +113,7 @@ function TutorialPageContent() {
 		</div>
 	);
 }
-const TutorialPage = withSettingsLoaded(TutorialPageContent);
+const TutorialPage = withStorageLoaded(TutorialPageContent);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<BaseApp>
@@ -104,13 +121,27 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 	</BaseApp>,
 );
 
-function Section({ withBorder = true, title, description, children }: { withBorder?: boolean, title?: string, description?: string, children: React.ReactNode }) {
+function Section({ withBorder = true, title, description, children, settingName }: { withBorder?: boolean, title?: string, description?: string, children: React.ReactNode, settingName?: keyof FeatureUsageCounts }) {
+	const featureUsageCounts = useValue(featureUsageCounts$);
+	const usageCount = settingName ? featureUsageCounts[settingName] : undefined;
+	console.log(settingName, usageCount);
+	console.log(!!usageCount);
+
 	return (
 		<div className="bg-black/1! dark:bg-white/5!">
 			{withBorder && <Divider variant="solid" />}
 			<Space h="3xl" />
 			<div className="px-12">
-				{title && <Text size="lg" fw="bold" className="mb-1!">{title}</Text>}
+				<div className="mb-1! flex items-center gap-4">
+					{title && <Text size="lg" fw="bold">{title}</Text>}
+					{usageCount !== undefined && usageCount > 0 && (
+						<Badge
+							variant="dot"
+							color="blue"
+						>Used {usageCount} times
+						</Badge>
+					)}
+				</div>
 				{description && <Text size="sm" c="dimmed">{description}</Text>}
 				{(title || description) && <Space h="md" />}
 				{children}

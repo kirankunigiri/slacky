@@ -48,4 +48,4 @@ function SettingsButton() {
 	);
 }
 
-export default withSettingsLoaded(SettingsButton);
+export default withStorageLoaded(SettingsButton);

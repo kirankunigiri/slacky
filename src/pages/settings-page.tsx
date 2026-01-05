@@ -23,7 +23,7 @@ function SettingsPageImpl() {
 		<SettingsPageContent />
 	);
 }
-const SettingsPage = withSettingsLoaded(SettingsPageImpl);
+const SettingsPage = withStorageLoaded(SettingsPageImpl);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<BaseApp>

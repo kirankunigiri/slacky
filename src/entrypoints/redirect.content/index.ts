@@ -1,4 +1,5 @@
 import { getBackgroundService } from '@/utils/messaging';
+import { featureUsageCounts$ } from '@/utils/store';
 
 /** Opens the browser Slack link immediately when visiting /archives links that try to open the desktop app */
 export default defineContentScript({
@@ -37,7 +38,7 @@ const startMonitoring = async () => {
 /** Finds the browser Slack link and navigates to it */
 const findAndOpenBrowserSlackLink = async () => {
 	// Check if setting is enabled
-	await loadSettings();
+	await loadStorage();
 	const openSlackLinksInBrowser = settings$.open_slack_links_in_browser.get();
 	if (!openSlackLinksInBrowser) return false;
 
@@ -47,6 +48,7 @@ const findAndOpenBrowserSlackLink = async () => {
 		if (link.getAttribute('href')?.startsWith('/messages/')) {
 			const href = link.getAttribute('href');
 			if (href) {
+				featureUsageCounts$.open_slack_links_in_browser.set(v => v + 1);
 				getBackgroundService().trackEvent({ eventName: 'skipped_app_redirect' });
 				window.location.href = href;
 				return true;

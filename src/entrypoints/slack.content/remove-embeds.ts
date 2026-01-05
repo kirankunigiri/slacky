@@ -1,5 +1,5 @@
 import { getBackgroundService } from '@/utils/messaging';
-import { settings$ } from '@/utils/store';
+import { featureUsageCounts$, settings$ } from '@/utils/store';
 
 /** Checks if a URL's hostname matches a domain filter (including subdomains) */
 const matchesDomainFilter = (href: string, filter: string): boolean => {
@@ -16,10 +16,13 @@ const matchesDomainFilter = (href: string, filter: string): boolean => {
 	}
 };
 
+// Track whether we initiated the removal (vs user manually clicking delete)
+let extensionInitiatedRemoval = false;
+
 /** Removes embed links from Slack messages */
 const removeEmbeds = () => {
-	// Track whether we initiated the removal (vs user manually clicking delete)
-	let extensionInitiatedRemoval = false;
+	// Track which confirm buttons we've already processed to avoid duplicate events for tracking
+	const processedConfirmButtons = new WeakSet<HTMLButtonElement>();
 
 	// Function to process a message attachment and delete if it contains a GitHub link
 	async function processAttachment(attachment: Element) {
@@ -28,7 +31,7 @@ const removeEmbeds = () => {
 		if (!link) return;
 
 		const href = link.getAttribute('href') || '';
-		await loadSettings();
+		await loadStorage();
 		const removeAllEmbedLinks = settings$.remove_all_embed_links.get();
 		const embedLinkFilters = settings$.embed_link_filters.get().filter(filter => filter !== '');
 
@@ -46,6 +49,7 @@ const removeEmbeds = () => {
 			// Track embed removal
 			try {
 				const url = new URL(href);
+				featureUsageCounts$.remove_embeds.set(v => v + 1);
 				getBackgroundService().trackEvent({
 					eventName: 'embed_link_removed',
 					eventProperties: {
@@ -66,6 +70,7 @@ const removeEmbeds = () => {
 
 			// Track when user manually clicked delete and auto-confirm kicked in
 			if (!extensionInitiatedRemoval) {
+				featureUsageCounts$.auto_confirm_embed_removal.set(v => v + 1);
 				getBackgroundService().trackEvent({
 					eventName: 'auto_confirmed_embed_removal',
 				});
@@ -94,18 +99,22 @@ const removeEmbeds = () => {
 						processAttachment(element);
 					}
 
-					// Check if it's the confirmation button itself
-					if (element.getAttribute?.('data-qa') === 'dialog_go') {
-						clickConfirmButton(element as HTMLButtonElement);
-					}
-
 					// Also check for attachments within the added node
 					const attachments = element.querySelectorAll?.('.c-message_attachment');
 					attachments?.forEach(processAttachment);
 
-					// Also check for confirmation buttons within the added node
-					const confirmButtons = element.querySelectorAll?.('[data-qa="dialog_go"]') as NodeListOf<HTMLButtonElement>;
-					confirmButtons?.forEach(clickConfirmButton);
+					// Check if element is the "Remove preview?" modal or contains it
+					const isDirectMatch = element.matches?.('div[aria-label="Remove preview?"]');
+					const modals = isDirectMatch
+						? [element]
+						: Array.from(element.querySelectorAll?.('div[aria-label="Remove preview?"]') ?? []);
+					for (const modal of modals) {
+						const confirmButton = modal.querySelector('[data-qa="dialog_go"]') as HTMLButtonElement | null;
+						if (confirmButton && !processedConfirmButtons.has(confirmButton)) {
+							processedConfirmButtons.add(confirmButton);
+							clickConfirmButton(confirmButton);
+						}
+					}
 				}
 			});
 		});

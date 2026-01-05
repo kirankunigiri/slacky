@@ -1,4 +1,5 @@
 import { getBackgroundService } from '@/utils/messaging';
+import { featureUsageCounts$ } from '@/utils/store';
 
 /**
  * Slack Message Exporter - export all message in a channel or thread
@@ -201,6 +202,7 @@ export const exportMessages = async ({ type, exportFormat }: ExportMessagesOptio
 
 	// Track the export event
 	const exportDuration = (performance.now() - startTime) / 1000;
+	featureUsageCounts$.message_export_format.set(v => v + 1);
 	getBackgroundService().trackEvent({
 		eventName: 'messages_exported',
 		eventProperties: {

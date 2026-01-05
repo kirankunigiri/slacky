@@ -76,8 +76,58 @@ export const settings$ = observable<Settings>(
 	}),
 );
 
-export const loadSettings = async () => {
+// Track feature usage count
+export type FeatureUsageCounts = {
+	[K in keyof Omit<Settings, 'show_settings_button_in_slack' | 'remove_all_embed_links' | 'embed_link_filters'>]: number;
+} & {
+	remove_embeds: number
+};
+
+const defaultFeatureUsageCounts: FeatureUsageCounts = {
+	open_slack_links_in_browser: 0,
+	auto_confirm_embed_removal: 0,
+	message_export_format: 0,
+	remove_embeds: 0,
+};
+
+const FEATURE_USAGE_STORAGE_KEY = 'local:featureUsageCounts' as const;
+
+export const featureUsageCounts$ = observable<FeatureUsageCounts>(
+	synced({
+		initial: defaultFeatureUsageCounts,
+
+		get: async () => {
+			const value = await storage.getItem(FEATURE_USAGE_STORAGE_KEY);
+			if (value) {
+				try {
+					const stored = JSON.parse(value as string) as Partial<FeatureUsageCounts>;
+					return { ...defaultFeatureUsageCounts, ...stored };
+				} catch {
+					return defaultFeatureUsageCounts;
+				}
+			}
+			return defaultFeatureUsageCounts;
+		},
+
+		set: async ({ value }) => {
+			await storage.setItem(FEATURE_USAGE_STORAGE_KEY, JSON.stringify(value));
+		},
+
+		subscribe: ({ refresh }) => {
+			return storage.watch<string>(FEATURE_USAGE_STORAGE_KEY, () => refresh());
+		},
+	}),
+);
+
+export const loadStorage = async () => {
+	featureUsageCounts$.get();
 	settings$.get();
-	const status$ = syncState(settings$);
-	await when(status$.isLoaded);
+
+	const featureUsageCountsStatus$ = syncState(featureUsageCounts$);
+	const settingsStatus$ = syncState(settings$);
+
+	await Promise.all([
+		when(featureUsageCountsStatus$.isLoaded),
+		when(settingsStatus$.isLoaded),
+	]);
 };

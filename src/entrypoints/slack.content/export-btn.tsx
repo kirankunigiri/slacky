@@ -60,4 +60,4 @@ function ExportMessagesButton({ type }: Pick<ExportMessagesOptions, 'type'>) {
 	);
 }
 
-export default withSettingsLoaded(ExportMessagesButton);
+export default withStorageLoaded(ExportMessagesButton);
