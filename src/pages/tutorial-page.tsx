@@ -138,7 +138,7 @@ function Section({ withBorder = true, title, description, children, settingName 
 						<Badge
 							variant="dot"
 							color="blue"
-						>Used {usageCount} times
+						>Used {usageCount} {usageCount === 1 ? 'time' : 'times'}
 						</Badge>
 					)}
 				</div>
