@@ -9,12 +9,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
-	<script>
-		(function () {
-			var scheme = localStorage.getItem('mantine-color-scheme') || 'dark';
-			document.documentElement.setAttribute('data-mantine-color-scheme', scheme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : scheme);
-		})();
-	</script>
+	<script type="module" src="../assets/color-scheme-init.js"></script>
 	<link rel="stylesheet" href="../assets/index.css" />
 	<link rel="stylesheet" href="../theme/style.css" />
 </head>
