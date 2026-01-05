@@ -76,7 +76,6 @@ export const injectComponent = ({ parentSelector, componentId, Component, positi
  * @param injectPosition Position to inject the component relative to the container
  */
 const renderComponent = ({ container, componentId, Component, position }: RenderComponentOptions) => {
-	console.log(`rendering component ${componentId}`);
 	const root = document.createElement('div');
 	root.id = `${componentId}-parent`;
 

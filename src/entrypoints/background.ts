@@ -1,8 +1,6 @@
 import { registerBackgroundService } from '@/utils/messaging';
 
 export default defineBackground(() => {
-	console.log('Hello background!', { id: browser.runtime.id });
-
 	// Open tutorial page on first install
 	browser.runtime.onInstalled.addListener((details) => {
 		if (details.reason === 'install') {

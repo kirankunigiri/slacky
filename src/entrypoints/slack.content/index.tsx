@@ -5,8 +5,6 @@ import SettingsButton from '@/entrypoints/slack.content/settings-btn';
 export default defineContentScript({
 	matches: ['*://*.slack.com/*'],
 	main() {
-		console.log('slack.content content script loaded.');
-
 		// Remove embeds
 		removeEmbeds();
 

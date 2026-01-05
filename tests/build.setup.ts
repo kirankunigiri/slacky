@@ -15,7 +15,7 @@ async function globalSetup() {
 			VITE_IS_TEST_BUILD: 'true',
 		},
 	});
-	console.log('Extension build complete.');
+	console.log('Build finished.');
 }
 
 export default globalSetup;
