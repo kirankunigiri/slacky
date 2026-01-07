@@ -1,6 +1,10 @@
 name: Playwright Tests
 on:
   workflow_dispatch:
+  schedule:
+    # Runs at 8pm PST every Monday (4am UTC Tuesday)
+    # Note: Cron doesn't adjust for DST. During PDT (summer), this runs at 9pm.
+    - cron: '0 4 * * 2'
 jobs:
   test:
     timeout-minutes: 60
