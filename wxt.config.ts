@@ -4,6 +4,8 @@ import path from 'path';
 import { defineConfig } from 'wxt';
 
 const isTestBuild = process.env.VITE_IS_TEST_BUILD === 'true';
+// Detect if we're running `wxt build` (not `wxt prepare` or `wxt dev`)
+const isBuildCommand = process.argv.includes('build');
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -14,6 +16,16 @@ export default defineConfig({
 		// Async import env vars since they are not available before this function
 		// Validation will block wxt from starting if any env vars are incorrect
 		const { clientEnv } = await import('./src/utils/client-env');
+		// Only validate PostHog credentials during actual production builds, not `wxt prepare`
+		if (
+			isBuildCommand
+			&& mode === 'production'
+			&& clientEnv.VITE_REQUIRE_POSTHOG_IN_PROD
+			&& !clientEnv.VITE_PUBLIC_POSTHOG_HOST
+			&& !clientEnv.VITE_PUBLIC_POSTHOG_KEY
+		) {
+			throw new Error('PostHog credentials are required in production because VITE_REQUIRE_POSTHOG_IN_PROD is true.');
+		}
 		const analyticsHost = clientEnv.VITE_PUBLIC_POSTHOG_HOST;
 
 		// CSP for extension pages

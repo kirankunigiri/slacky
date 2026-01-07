@@ -16,7 +16,8 @@ import { defaultSettingsPropertiesWithTheme } from '@/utils/store';
  */
 
 export const ph = new PostHog();
-const disableAnalytics = import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
+const missingPostHogCredentials = !env.VITE_PUBLIC_POSTHOG_HOST || !env.VITE_PUBLIC_POSTHOG_KEY;
+const disableAnalytics = missingPostHogCredentials || import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
 if (!disableAnalytics) {
 	const scriptType = typeof document !== 'undefined' ? 'ui' : 'background';
 	setupPostHog({ posthog: ph, type: scriptType });
@@ -25,7 +26,7 @@ if (!disableAnalytics) {
 /** React provider for PostHog */
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 	if (disableAnalytics) {
-		console.log('Analytics disabled in development');
+		console.log('Analytics disabled');
 		return (
 			<ErrorFallback>
 				{children}
@@ -114,7 +115,7 @@ async function setupPostHog({
 	type: PostHogClientType
 }) {
 	const userInfo = await getUserInfo();
-	posthog.init(env.VITE_PUBLIC_POSTHOG_KEY, {
+	posthog.init(env.VITE_PUBLIC_POSTHOG_KEY!, {
 		...(type === 'ui' ? uiPostHogOptions : backgroundPostHogOptions),
 		bootstrap: {
 			distinctID: userInfo.userId,
