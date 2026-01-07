@@ -59,7 +59,7 @@ export default defineConfig({
 			},
 		},
 	},
-	vite: ({ mode }) => ({
+	vite: () => ({
 		plugins: [
 			tailwindcss(),
 			inspectorServer() as never,
@@ -74,26 +74,9 @@ export default defineConfig({
 			'import.meta.env.VITE_PROJECT_ROOT': JSON.stringify(path.resolve(__dirname)),
 		},
 		// Required workaround for posthog - https://github.com/PostHog/posthog-js/issues/2604
-		// Only use terser in production (it's much slower than esbuild)
-		build: mode === 'production'
-			? {
-				minify: 'terser',
-				terserOptions: {
-					compress: {
-						drop_console: false,
-						drop_debugger: false,
-						pure_funcs: [],
-					},
-					format: {
-						ascii_only: true, // Critical: Forces ASCII-safe output
-						comments: false,
-					},
-					mangle: {
-						keep_classnames: true,
-						keep_fnames: true,
-					},
-				},
-			}
-			: undefined,
+		// Forces ASCII-safe output to prevent UTF-8 encoding errors in content scripts
+		esbuild: {
+			charset: 'ascii',
+		},
 	}),
 });
