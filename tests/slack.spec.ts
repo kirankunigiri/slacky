@@ -16,6 +16,7 @@ import { deleteAllMessages, deleteLastMessage, getTestMessageLink, openTestSlack
 
 // =============================================================================
 // Test: show_settings_button_in_slack
+// Always works
 // =============================================================================
 test('show_settings_button_in_slack: toggle visibility', async ({ context, page, extensionId }) => {
 	// Open Slack
@@ -47,6 +48,7 @@ test('show_settings_button_in_slack: toggle visibility', async ({ context, page,
 
 // =============================================================================
 // Test: remove_all_embed_links
+// Headless 9/10 - works unless slack attachment removing failed
 // =============================================================================
 test('remove_all_embed_links: toggle embed removal', async ({ context, page, extensionId }) => {
 	// Open options page to configure settings
@@ -69,13 +71,19 @@ test('remove_all_embed_links: toggle embed removal', async ({ context, page, ext
 	const attachment = page.locator('.c-message_attachment').last();
 	await expect(attachment).toBeVisible({ timeout: 10000 });
 
-	// Delete the last message (right-click on message, press Delete, then Enter to confirm)
+	// Delete the last message
 	await deleteLastMessage(page);
+	// Verify the attachment is gone before continuing
+	await expect(page.locator('.c-message_attachment')).toHaveCount(0, { timeout: 5000 });
 
 	// ENABLED STATE: Enable the setting
 	await optionsPage.bringToFront();
 	await removeAllCheckbox.check();
 	await expect(removeAllCheckbox).toBeChecked();
+
+	// Wait for settings to propagate to content script, then bring Slack to front
+	// await page.waitForTimeout(1000);
+	await page.bringToFront();
 
 	// Post another message with link - Run #1
 	await postMessageWithLink(page);
@@ -83,8 +91,8 @@ test('remove_all_embed_links: toggle embed removal', async ({ context, page, ext
 	// Run #2 - post another message to trigger the feature again
 	await postMessageWithLink(page);
 
-	// Ensure 0 attachments were created
-	await expect(page.locator('.c-message_attachment')).toHaveCount(0, { timeout: 1000 });
+	// Ensure 0 attachments (extension should have removed them)
+	await expect(page.locator('.c-message_attachment')).toHaveCount(0, { timeout: 10000 });
 
 	// Verify usage count shows "Used 2 times" on tutorial page
 	await verifyUsageCount(context, extensionId, 'remove_embeds', 2);
@@ -96,6 +104,7 @@ test('remove_all_embed_links: toggle embed removal', async ({ context, page, ext
 
 // =============================================================================
 // Test: embed_link_filters
+// Headless - 9/10 works
 // =============================================================================
 test('embed_link_filters: filter specific domains', async ({ context, page, extensionId }) => {
 	// Open options page to configure settings
@@ -130,16 +139,13 @@ test('embed_link_filters: filter specific domains', async ({ context, page, exte
 	await filterInput.fill('github.com');
 	await filterInput.blur(); // Trigger validation
 
-	// Post a github link - Run #1
+	// Wait for settings to propagate to content script, then bring Slack to front
+	await page.waitForTimeout(1000);
 	await page.bringToFront();
 	await postMessageWithLink(page, 'https://github.com/microsoft/vscode');
 
-	// Wait for embed to be created and removed
-	await page.waitForTimeout(3000);
-
 	// Post another github link - Run #2
 	await postMessageWithLink(page, 'https://github.com/wxt-dev/wxt');
-	await page.waitForTimeout(3000);
 
 	// Post a non-github link and ensure embed exists - Run #3
 	await postMessageWithLink(page, 'https://about.gitlab.com/solutions/continuous-integration/');
@@ -149,10 +155,12 @@ test('embed_link_filters: filter specific domains', async ({ context, page, exte
 	await verifyUsageCount(context, extensionId, 'remove_embeds', 2);
 
 	await optionsPage.close();
+	await deleteAllMessages(page);
 });
 
 // =============================================================================
 // Test: auto_confirm_embed_removal
+// 10x headless - works
 // =============================================================================
 test('auto_confirm_embed_removal: auto-confirm dialog', async ({ context, page, extensionId }) => {
 	// Open options page to configure settings
@@ -174,6 +182,9 @@ test('auto_confirm_embed_removal: auto-confirm dialog', async ({ context, page, 
 		await removeAllCheckbox.uncheck();
 	}
 
+	// Wait for settings to propagate before going to Slack
+	await page.waitForTimeout(1000);
+
 	// Go to Slack and open tests channel
 	await openTestSlackChannel(page, 'test-3');
 	await deleteAllMessages(page);
@@ -182,6 +193,9 @@ test('auto_confirm_embed_removal: auto-confirm dialog', async ({ context, page, 
 	await postMessageWithLink(page);
 
 	// DISABLED STATE: Click delete button on embed, confirmation dialog should appear
+	await page.locator('.c-message_attachment').last().scrollIntoViewIfNeeded();
+	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
 	const deleteButton = page.locator('.c-message_attachment__delete').last();
 	await expect(deleteButton).toBeVisible({ timeout: 10000 });
 	await deleteButton.click();
@@ -199,6 +213,10 @@ test('auto_confirm_embed_removal: auto-confirm dialog', async ({ context, page, 
 	await optionsPage.bringToFront();
 	await autoConfirmCheckbox.check();
 	await expect(autoConfirmCheckbox).toBeChecked();
+
+	// Wait for settings to propagate to content script, then bring Slack to front
+	await page.waitForTimeout(1000);
+	await page.bringToFront();
 
 	// Click delete button - Run #1 - dialog should auto-confirm
 	const newDeleteButton = page.locator('.c-message_attachment__delete').last();
@@ -244,7 +262,9 @@ test('open_slack_links_in_browser: auto-redirect', async ({ context, page, exten
 
 	// Get a test message link
 	await openTestSlackChannel(page, 'test-4');
+	await postMessageWithLink(page);
 	const testMessageLink = await getTestMessageLink(page, context);
+	await deleteAllMessages(page);
 
 	// DISABLED STATE: Navigate to an /archives/ link
 	// When disabled, the page will show options to open in app or browser
@@ -253,20 +273,31 @@ test('open_slack_links_in_browser: auto-redirect', async ({ context, page, exten
 	await page.waitForTimeout(3000);
 	// Verify we're still on the archives page (not redirected)
 	expect(page.url()).toContain('/archives/');
+	await page.close();
 
 	// ENABLED STATE: Enable the setting
 	await optionsPage.bringToFront();
 	await openInBrowserCheckbox.check();
 	await expect(openInBrowserCheckbox).toBeChecked();
-	await page.bringToFront();
+	await optionsPage.waitForTimeout(1000);
 
+	// Wait for settings to propagate to content script, then bring Slack to front
 	// Should auto-redirect to slack client. Trigger feature twice
-	for (let i = 0; i < 2; i++) {
-		await page.goto(testMessageLink);
-		await waitForChannelLoad(page);
-		expect(page.url()).toContain('/app.slack.com/client/');
-		await page.waitForTimeout(1000);
-	}
+	const newPage1 = await context.newPage();
+	await newPage1.bringToFront();
+	await newPage1.goto(testMessageLink, { waitUntil: 'commit' });
+	await newPage1.focus('body');
+	await expect(newPage1.locator('[data-qa="inline_channel_entity__name"]').first()).toBeVisible({ timeout: 30000 });
+	expect(newPage1.url()).toContain('/app.slack.com/client/');
+	await newPage1.close();
+
+	const newPage2 = await context.newPage();
+	await newPage2.bringToFront();
+	await newPage2.goto(testMessageLink, { waitUntil: 'commit' });
+	await newPage2.focus('body');
+	await expect(newPage2.locator('[data-qa="inline_channel_entity__name"]').first()).toBeVisible({ timeout: 30000 });
+	expect(newPage2.url()).toContain('/app.slack.com/client/');
+	await newPage2.close();
 
 	// Verify usage count shows "Used 2 times" on tutorial page
 	await verifyUsageCount(context, extensionId, 'open_slack_links_in_browser', 2);
@@ -275,14 +306,12 @@ test('open_slack_links_in_browser: auto-redirect', async ({ context, page, exten
 
 // =============================================================================
 // Test: message_export_format
+// 10x headless - works
 // TODO: Read delete messages, insert messages, verify clipboard/file contents matches, test export with thread
 // =============================================================================
 test('message_export_format: export functionality', async ({ context, page, extensionId }) => {
 	// Go to Slack and open test channel
 	await openTestSlackChannel(page, 'test-5');
-
-	// Wait for messages to load
-	await page.waitForTimeout(2000);
 
 	// Export button should be visible by default (default is 'clipboard')
 	const exportButton = page.locator('[data-qa="slacky-export-btn-channel"]');

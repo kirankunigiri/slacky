@@ -17,7 +17,7 @@ export async function deleteLastMessage(page: Page) {
 	// Open message context menu
 	const lastMessage = page.locator('.c-message_kit__message').last();
 	await lastMessage.hover();
-	await lastMessage.click({ button: 'right' });
+	await page.locator('[data-qa="more_message_actions"]').click();
 
 	// Click Delete
 	await expect(page.locator('[data-qa="delete_message"]')).toBeVisible({ timeout: 3000 });
@@ -34,7 +34,7 @@ export async function getTestMessageLink(page: Page, context: BrowserContext): P
 	// Open message context menu
 	const lastMessage = page.locator('.c-message_kit__message').last();
 	await lastMessage.hover();
-	await lastMessage.click({ button: 'right' });
+	await page.locator('[data-qa="more_message_actions"]').click();
 
 	// Click Copy Link
 	await expect(page.locator('[data-qa="copy_link"]')).toBeVisible({ timeout: 3000 });
@@ -46,17 +46,32 @@ export async function getTestMessageLink(page: Page, context: BrowserContext): P
 }
 
 export async function postMessageWithLink(page: Page, url = 'https://github.com/wxt-dev/wxt') {
+	const urlWithTimestamp = `${url}?timestamp=${Date.now()}`;
 	const messageInput = page.locator('[data-qa="message_input"]');
 	await expect(messageInput).toBeVisible({ timeout: 10000 });
 	await messageInput.click();
-	await page.keyboard.insertText(url);
+	await page.keyboard.insertText(urlWithTimestamp);
 	await page.waitForTimeout(100);
 	await page.keyboard.press('Enter');
 	await page.waitForTimeout(100);
+
+	await page.waitForTimeout(3000);
 };
 
 export async function openTestSlackChannel(page: Page, name: string) {
-	await page.goto('https://app.slack.com/client');
+	const maxRetries = 2;
+	let attempt = 0;
+	let loaded = false;
+	while (attempt < maxRetries && !loaded) {
+		try {
+			await page.goto('https://app.slack.com/client', {});
+			await waitForChannelLoad(page);
+			loaded = true;
+		} catch (e) {
+			attempt++;
+			if (attempt >= maxRetries) throw e;
+		}
+	}
 	const channelSelector = `div.p-channel_sidebar__channel:has-text("${name}")`;
 	await expect(page.locator(channelSelector)).toBeVisible({ timeout: 15000 });
 	await page.locator(channelSelector).click();
@@ -91,7 +106,7 @@ export async function verifyUsageCount(
 			// This feature should have the badge with correct count
 			const badge = tutorialPage.locator(badgeSelector);
 			await expect(badge).toBeVisible({ timeout: 5000 });
-			await expect(badge).toHaveText(`Used ${expectedCount} ${expectedCount === 1 ? 'time' : 'times'}`);
+			await expect(badge).toHaveText(`Used ${expectedCount} ${expectedCount === 1 ? 'time' : 'times'}`, { timeout: 10000 });
 		} else {
 			// Other features should have no badge (count is 0)
 			const badge = tutorialPage.locator(badgeSelector);

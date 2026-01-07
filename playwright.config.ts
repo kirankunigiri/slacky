@@ -4,6 +4,13 @@ import './tests/test-env';
 
 import { defineConfig, devices } from '@playwright/test';
 
+/**
+ * Slack is unreliable to test with, so we allow 2 retries
+ * - Sometimes may not create an attachment for a message when expected
+ * - Sometimes shows an error dialog "Attachment removing failed!"
+ * - Slack just doesn't load sometimes
+ */
+
 /** See https://playwright.dev/docs/test-configuration. */
 export default defineConfig({
 	testDir: './tests',
@@ -11,8 +18,8 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	/* Retry on CI only */
-	retries: process.env.CI ? 2 : 0,
+	/* Retry up to 2 times (3 total attempts). Passing on retry = "flaky" */
+	retries: 2,
 	/* Opt out of parallel tests on CI. */
 	workers: process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
