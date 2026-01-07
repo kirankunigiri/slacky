@@ -43,6 +43,7 @@ function MessageExportSettings() {
 			leftSection={messageExportFormat ? icons[messageExportFormat] : null}
 			value={messageExportFormat}
 			onChange={value => settings$.message_export_format.set(value as MessageExportFormat)}
+			data-qa="message-export-format-select"
 		/>
 	);
 }

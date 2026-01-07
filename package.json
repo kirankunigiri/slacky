@@ -16,7 +16,11 @@
 		"sync-env": "doppler -p slacky -c dev secrets download --no-file --format env | tee .env > /dev/null",
 		"test": "playwright test",
 		"test:headed": "playwright test --headed",
-		"test:ui": "playwright test --ui"
+		"test:ui": "playwright test --ui",
+		"test:skip-build": "SKIP_BUILD=1 playwright test",
+		"test:skip-build:headed": "SKIP_BUILD=1 playwright test --headed",
+		"test:fast": "SKIP_BUILD=1 SKIP_AUTH=1 playwright test",
+		"test:fast:headed": "SKIP_BUILD=1 SKIP_AUTH=1 playwright test --headed"
 	},
 	"dependencies": {
 		"@legendapp/state": "^3.0.0-beta.42",

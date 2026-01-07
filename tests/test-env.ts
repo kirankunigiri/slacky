@@ -1,7 +1,6 @@
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod/v4';
 
-// TODO: Need a way to disable analytics in tests
 export const testEnv = createEnv({
 	clientPrefix: 'TEST_',
 	client: {

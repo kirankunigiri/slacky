@@ -77,6 +77,7 @@ function FilterInput({
 				onBlur={() => setHasBlurred(true)}
 				placeholder="Domain (ex: github.com)"
 				className="w-full px-3"
+				data-qa={`domain-filter-input-${index}`}
 			/>
 			{showError && (
 				<Tooltip label="Invalid domain. Example: github.com">
@@ -145,6 +146,7 @@ function RemoveEmbedSettings(
 				<Checkbox
 					label="Remove all embeds"
 					id="removeAllEmbedLinks"
+					data-qa="setting-remove-all-embeds"
 					checked={removeAllEmbedLinks}
 					onChange={e => settings$.remove_all_embed_links.set(e.target.checked)}
 				/>
@@ -154,6 +156,7 @@ function RemoveEmbedSettings(
 						size="compact-xs"
 						onClick={addFilter}
 						disabled={!canAddFilter || embedLinkFilters.some(f => f === '')}
+						data-qa="add-domain-filter-btn"
 					>
 						<div className="flex items-center gap-1">
 							<PlusIcon size={16} />

@@ -124,11 +124,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 function Section({ withBorder = true, title, description, children, settingName }: { withBorder?: boolean, title?: string, description?: string, children: React.ReactNode, settingName?: keyof FeatureUsageCounts }) {
 	const featureUsageCounts = useValue(featureUsageCounts$);
 	const usageCount = settingName ? featureUsageCounts[settingName] : undefined;
-	console.log(settingName, usageCount);
-	console.log(!!usageCount);
 
 	return (
-		<div className="bg-black/1! dark:bg-white/5!">
+		<div className="bg-black/1! dark:bg-white/5!" data-qa={settingName ? `section-${settingName}` : undefined}>
 			{withBorder && <Divider variant="solid" />}
 			<Space h="3xl" />
 			<div className="px-12">
@@ -138,6 +136,7 @@ function Section({ withBorder = true, title, description, children, settingName 
 						<Badge
 							variant="dot"
 							color="blue"
+							data-qa={`usage-badge-${settingName}`}
 						>Used {usageCount} {usageCount === 1 ? 'time' : 'times'}
 						</Badge>
 					)}

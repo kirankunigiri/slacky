@@ -7,7 +7,15 @@ import { testEnv as env } from './test-env';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
+/**
+ * Authentication setup for Playwright tests
+ * Skip with: SKIP_AUTH=1 bun run test
+ */
 setup('authenticate', async ({ page }) => {
+	if (process.env.SKIP_AUTH) {
+		console.log('Skipping auth (SKIP_AUTH=1)');
+		return;
+	}
 	await page.goto(`https://${env.TEST_SLACK_WORKSPACE_NAME}.slack.com/sign_in_with_password`);
 
 	// Wait for the page to load

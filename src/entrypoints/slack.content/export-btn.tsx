@@ -34,8 +34,8 @@ function ExportMessagesButton({ type }: Pick<ExportMessagesOptions, 'type'>) {
 		<button
 			// eslint-disable-next-line better-tailwindcss/no-unregistered-classes
 			className="c-button-unstyled p-top_nav__button p-top_nav__help"
-			data-qa="highlight-btn"
-			aria-label="Slacky Settings"
+			data-qa={`slacky-export-btn-${type}`}
+			aria-label="Slacky Export Messages"
 			data-sk="tooltip_parent"
 			type="button"
 			tabIndex={-1}
