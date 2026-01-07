@@ -20,6 +20,7 @@ export default defineConfig({
 		if (
 			isBuildCommand
 			&& mode === 'production'
+			&& !isTestBuild
 			&& clientEnv.VITE_REQUIRE_POSTHOG_IN_PROD
 			&& !clientEnv.VITE_PUBLIC_POSTHOG_HOST
 			&& !clientEnv.VITE_PUBLIC_POSTHOG_KEY
