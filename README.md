@@ -1,4 +1,7 @@
 # slacky
+
+![Playwright Tests](https://github.com/kirankunigiri/slacky/actions/workflows/playwright.yml/badge.svg)
+
 A browser extension with simple improvements for Slack
 
 ---
@@ -44,3 +47,4 @@ This project uses e2e tests with Playwright.
 - Tests always run a build step and auth step. After running them once, you can skip either in the future with `bun run test:fast` or `bun run SKIP_BUILD=1 SKIP_AUTH=1 playwright test`
 - Tests are unreliable because Slack just may not load sometimes or cause issues with tests. The playwright config allows for 2 retries, which is reliable enough to verify if the tests actually work. Tests may be marked as flaky but it's expected.
 - Can't use remote runners because Slack can require an OTP code. If you login on your own machine first and then run tests locally it should work automatically. I've seen workarounds where people scan a test email for an OTP code but seems overkill (could do something for free using CF email workers)
+- Tests run once a week to ensure there haven't been any UI changes to Slack that break the extension.
