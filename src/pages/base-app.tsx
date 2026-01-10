@@ -6,7 +6,8 @@ import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
 import { shadcnTheme } from '@/theme/theme.tsx';
 import { AnalyticsProvider } from '@/utils/analytics';
 
-if (import.meta.env.DEV) {
+/** react-scan is broken in firefox (it freezes the page) */
+if (import.meta.env.DEV && import.meta.env.BROWSER === 'chrome') {
 	import('react-scan').then(({ scan }) => scan({ enabled: true }));
 }
 
