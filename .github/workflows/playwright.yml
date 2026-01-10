@@ -21,6 +21,13 @@ jobs:
         TEST_SLACK_WORKSPACE_NAME: ${{ secrets.TEST_SLACK_WORKSPACE_NAME }}
         TEST_SLACK_EMAIL: ${{ secrets.TEST_SLACK_EMAIL }}
         TEST_SLACK_PASSWORD: ${{ secrets.TEST_SLACK_PASSWORD }}
+    - name: Publish Test Report
+      uses: ctrf-io/github-test-reporter@v1
+      with:
+        report-path: './ctrf/*.json'
+        github-report: true
+        upload-artifact: true
+      if: always()
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

@@ -4,6 +4,8 @@
 
 A browser extension with simple improvements for Slack
 
+Have an idea for a new feature? Feel free to open a PR or create a new issue for a feature request.
+
 ---
 
 ### Development
