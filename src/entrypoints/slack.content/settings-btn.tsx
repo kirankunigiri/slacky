@@ -9,6 +9,9 @@ import { browser } from '#imports';
 
 const MODAL_ANIMATION_MS = 100;
 
+/** The iframe takes a bit to load, so we wait a bit before starting the animation */
+const IFRAME_LOAD_DELAY_MS = 200;
+
 function SettingsButton() {
 	const showSettingsButtonInSlack = useValue(settings$.show_settings_button_in_slack);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +24,7 @@ function SettingsButton() {
 
 	const handleOpen = () => {
 		setIsModalOpen(true);
-		setTimeout(() => setIsAnimating(true), 0); // Trigger animation after mount
+		setTimeout(() => setIsAnimating(true), IFRAME_LOAD_DELAY_MS);
 		getBackgroundService().trackEvent({
 			eventName: 'slacky_button_clicked',
 		});
