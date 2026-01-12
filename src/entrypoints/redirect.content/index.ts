@@ -1,5 +1,6 @@
 import { getBackgroundService } from '@/utils/messaging';
-import { featureUsageCounts$ } from '@/utils/store';
+import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
+import { defineContentScript } from '#imports';
 
 /** Opens the browser Slack link immediately when visiting /archives links that try to open the desktop app */
 export default defineContentScript({

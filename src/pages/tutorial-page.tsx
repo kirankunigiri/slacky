@@ -14,6 +14,8 @@ import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
+import { FeatureUsageCounts, featureUsageCounts$ } from '@/utils/store';
+import { withStorageLoaded } from '@/utils/utils';
 
 function TutorialPageContent() {
 	return (

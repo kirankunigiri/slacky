@@ -1,4 +1,5 @@
 import { registerBackgroundService } from '@/utils/messaging';
+import { browser, defineBackground } from '#imports';
 
 export default defineBackground(() => {
 	// Open tutorial page on first install

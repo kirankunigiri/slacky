@@ -1,7 +1,10 @@
 import { useValue } from '@legendapp/state/react';
 import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
+import { useState } from 'react';
 
 import { exportMessages, ExportMessagesOptions } from '@/entrypoints/slack.content/export';
+import { settings$ } from '@/utils/store';
+import { withStorageLoaded } from '@/utils/utils';
 
 /**
  * Button that exports all messages in a channel/thread

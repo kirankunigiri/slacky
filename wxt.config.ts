@@ -55,11 +55,7 @@ export default defineConfig({
 		};
 	},
 	srcDir: 'src',
-	imports: {
-		eslintrc: {
-			enabled: 9,
-		},
-	},
+	imports: false,
 	modules: [
 		'@wxt-dev/module-react',
 		'@wxt-dev/auto-icons',

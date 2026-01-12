@@ -1,5 +1,5 @@
 import { getBackgroundService } from '@/utils/messaging';
-import { featureUsageCounts$ } from '@/utils/store';
+import { featureUsageCounts$, MessageExportFormat } from '@/utils/store';
 
 /**
  * Slack Message Exporter - export all message in a channel or thread

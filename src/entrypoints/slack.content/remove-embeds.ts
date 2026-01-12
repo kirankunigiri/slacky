@@ -1,5 +1,5 @@
 import { getBackgroundService } from '@/utils/messaging';
-import { featureUsageCounts$, settings$ } from '@/utils/store';
+import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
 
 /** Checks if a URL's hostname matches a domain filter (including subdomains) */
 const matchesDomainFilter = (href: string, filter: string): boolean => {

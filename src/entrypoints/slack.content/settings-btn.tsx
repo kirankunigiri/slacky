@@ -2,8 +2,10 @@ import { useValue } from '@legendapp/state/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { getBackgroundService } from '@/utils/messaging';
 import { settings$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
+import { browser } from '#imports';
 
 const MODAL_ANIMATION_MS = 100;
 

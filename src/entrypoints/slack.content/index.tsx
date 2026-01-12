@@ -1,6 +1,8 @@
 import ExportMessagesButton from '@/entrypoints/slack.content/export-btn';
 import removeEmbeds from '@/entrypoints/slack.content/remove-embeds';
 import SettingsButton from '@/entrypoints/slack.content/settings-btn';
+import { injectComponent } from '@/utils/injector';
+import { defineContentScript } from '#imports';
 
 export default defineContentScript({
 	matches: ['*://*.slack.com/*'],

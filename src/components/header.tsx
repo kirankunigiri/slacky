@@ -4,7 +4,9 @@ import { clsx } from 'clsx';
 import { Moon, RotateCw, Sun } from 'lucide-react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
+import { trackEvent } from '@/utils/analytics';
 import { defaultSettingsProperties } from '@/utils/store';
+import { browser } from '#imports';
 
 function Header({
 	isTutorialPage = false,

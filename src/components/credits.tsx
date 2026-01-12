@@ -1,4 +1,5 @@
 import { trackEvent } from '@/utils/analytics';
+import { browser } from '#imports';
 
 function Credits() {
 	return (

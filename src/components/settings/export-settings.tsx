@@ -2,7 +2,7 @@ import { useValue } from '@legendapp/state/react';
 import { Group, Select, SelectProps } from '@mantine/core';
 import { IconCheck, IconCircleOff, IconClipboard, IconMarkdown } from '@tabler/icons-react';
 
-import { settings$ } from '@/utils/store';
+import { MessageExportFormat, settings$ } from '@/utils/store';
 
 const icons: Record<string, React.ReactNode> = {
 	clipboard: <IconClipboard size={16} />,

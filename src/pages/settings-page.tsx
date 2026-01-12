@@ -8,6 +8,8 @@ import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
+import { withStorageLoaded } from '@/utils/utils';
+import { browser } from '#imports';
 
 export function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');

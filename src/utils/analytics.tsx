@@ -8,7 +8,8 @@ import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import { v7 as uuidv7 } from 'uuid';
 
 import { clientEnv as env } from '@/utils/client-env';
-import { defaultSettingsPropertiesWithTheme } from '@/utils/store';
+import { defaultSettingsPropertiesWithTheme, MessageExportFormat } from '@/utils/store';
+import { browser } from '#imports';
 
 /**
  * Setup analytics using PostHog
