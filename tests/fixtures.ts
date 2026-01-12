@@ -1,5 +1,4 @@
 /* eslint-disable no-empty-pattern */
-/* eslint-disable react-hooks/rules-of-hooks */ // TODO: Fix in ESLint for non-jsx files
 import { type BrowserContext, type Page, test as base } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';

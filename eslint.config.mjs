@@ -32,9 +32,6 @@ export default defineConfig(
 		files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
 		languageOptions: {
 			globals: { ...globals.browser, ...globals.node },
-			parserOptions: {
-				ecmaFeatures: { jsx: true },
-			},
 		},
 		extends: [
 
@@ -45,20 +42,13 @@ export default defineConfig(
 			...tseslint.configs.recommended,
 			...tseslint.configs.stylistic,
 
-			pluginReactConfig.configs.flat['recommended'],
-			pluginReactConfig.configs.flat['jsx-runtime'],
 			stylistic.configs['recommended'],
 		],
 		plugins: {
-			'react': pluginReactConfig,
 			'@stylistic': stylistic,
-			'react-hooks': eslintPluginReactHooks,
 			'simple-import-sort': simpleImportSort,
 		},
 		rules: {
-			// ESLint react-hooks recommended config
-			...eslintPluginReactHooks.configs['recommended-latest'].rules,
-
 			// Stylistic
 			'@stylistic/no-tabs': 'off',
 			'@stylistic/indent': ['warn', 'tab'],
@@ -78,12 +68,35 @@ export default defineConfig(
 			'@typescript-eslint/array-type': 'error',
 			'@typescript-eslint/consistent-indexed-object-style': 'error',
 
-			// React
-			'react/react-in-jsx-scope': 'off',
-			'react/no-children-prop': 'off',
 			// Simple Import Sort
 			'simple-import-sort/imports': 'error',
 			'simple-import-sort/exports': 'error',
+		},
+	},
+
+	// React configuration
+	{
+		files: ['**/*.{jsx,tsx}'],
+		languageOptions: {
+			parserOptions: {
+				ecmaFeatures: { jsx: true },
+			},
+		},
+		extends: [
+			pluginReactConfig.configs.flat['recommended'],
+			pluginReactConfig.configs.flat['jsx-runtime'],
+		],
+		plugins: {
+			'react': pluginReactConfig,
+			'react-hooks': eslintPluginReactHooks,
+		},
+		rules: {
+			// ESLint react-hooks recommended config
+			...eslintPluginReactHooks.configs['recommended-latest'].rules,
+
+			// React
+			'react/react-in-jsx-scope': 'off',
+			'react/no-children-prop': 'off',
 		},
 	},
 
