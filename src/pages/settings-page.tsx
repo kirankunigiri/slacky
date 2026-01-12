@@ -9,11 +9,20 @@ import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, Setting
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
 
-function SettingsPageImpl() {
+export function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');
 	if (isPopup) {
 		return (
 			<div className="h-[500px]! max-h-[500px]! w-[340px]! min-w-[340px]! overflow-hidden">
+				<SettingsPageContent />
+			</div>
+		);
+	}
+
+	const isSettings = window.location.pathname.endsWith('settings.html');
+	if (isSettings) {
+		return (
+			<div className="h-[500px]! max-h-[500px]! w-[420px]! min-w-[420px]! overflow-hidden">
 				<SettingsPageContent />
 			</div>
 		);

@@ -46,6 +46,12 @@ export default defineConfig({
 				extension_pages: extensionPagesCsp,
 				...(sandboxCsp && { sandbox: sandboxCsp }),
 			},
+			web_accessible_resources: [
+				{
+					resources: ['settings.html'],
+					matches: ['*://*.slack.com/*'],
+				},
+			],
 		};
 	},
 	srcDir: 'src',

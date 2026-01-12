@@ -200,9 +200,7 @@ interface LinkClickedEvent {
 
 interface SlackyButtonClickedEvent {
 	eventName: 'slacky_button_clicked'
-	eventProperties: {
-		page: 'popup' | 'options'
-	}
+	eventProperties?: undefined
 	userProperties?: undefined
 }
 
