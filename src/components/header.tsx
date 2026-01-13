@@ -5,8 +5,8 @@ import { Moon, RotateCw, Sun } from 'lucide-react';
 
 import { AnimatedLogo } from '@/components/animated-logo';
 import { trackEvent } from '@/utils/analytics';
-import { defaultSettingsProperties } from '@/utils/store';
-import { browser } from '#imports';
+import { defaultSettings, defaultSettingsProperties, SETTINGS_STORAGE_KEY } from '@/utils/store';
+import { browser, storage } from '#imports';
 
 function Header({
 	isTutorialPage = false,
@@ -97,7 +97,7 @@ const openConfirmResetSettingsModal = () => modals.openConfirmModal({
 	},
 	labels: { confirm: 'Reset', cancel: 'Cancel' },
 	onConfirm: () => {
-		browser.storage.local.clear();
+		storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(defaultSettings));
 		trackEvent({
 			eventName: 'settings_reset',
 			userProperties: defaultSettingsProperties,

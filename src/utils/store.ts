@@ -34,7 +34,7 @@ export const defaultSettingsPropertiesWithTheme = {
 	setting_theme: 'dark' as 'dark' | 'light',
 };
 
-const STORAGE_KEY = 'local:settings' as const;
+export const SETTINGS_STORAGE_KEY = 'local:settings' as const;
 
 export const settings$ = observable<Settings>(
 	synced({
@@ -42,7 +42,7 @@ export const settings$ = observable<Settings>(
 
 		// Get settings from WXT storage
 		get: async () => {
-			const value = await storage.getItem(STORAGE_KEY);
+			const value = await storage.getItem(SETTINGS_STORAGE_KEY);
 			if (value) {
 				try {
 					const stored = JSON.parse(value as string) as Partial<Settings>;
@@ -68,13 +68,13 @@ export const settings$ = observable<Settings>(
 					userProperties: { [`setting_${changePath}`]: changeValue },
 				});
 			}
-			await storage.setItem(STORAGE_KEY, JSON.stringify(value));
+			await storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(value));
 		},
 
 		// Subscribe to changes from other tabs using WXT storage.watch
 		// refresh() re-runs get() to fetch latest
 		subscribe: ({ refresh }) => {
-			return storage.watch<string>(STORAGE_KEY, () => refresh());
+			return storage.watch<string>(SETTINGS_STORAGE_KEY, () => refresh());
 		},
 	}),
 );
