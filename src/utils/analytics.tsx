@@ -70,7 +70,6 @@ function ErrorFallback({ children }: { children: React.ReactNode }) {
 
 type PostHogClientType = 'ui' | 'background';
 
-// TODO: Is import.meta.env available in background scripts?
 const basePostHogOptions: Partial<PostHogConfig> = {
 	api_host: env.VITE_PUBLIC_POSTHOG_HOST,
 	defaults: '2025-11-30',
