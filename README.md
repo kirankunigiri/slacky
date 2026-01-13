@@ -42,11 +42,19 @@ Because storage is async, you must ensure that settings are loaded first before 
 
 ### 🧪 Tests
 
-This project uses e2e tests with Playwright.
+This project uses e2e tests with Playwright
 - Playwright doesn't support browser extension testing for Firefox/Safari, so only chrome is tested
 - Each feature has its own test
+- Tests are unreliable because Slack just may not load sometimes or cause issues with tests. This project's playwright config allows for 2 retries, which is reliable enough to verify if the tests actually work. Tests may be marked as flaky but it's expected.
+- Tests run once a week through GitHub actions to ensure there haven't been any UI changes to Slack that break the extension.
+
+Running tests locally
 - To run tests, setup your env file with the required variables in `tests/test-env.ts`. You need to create a Slack channel, and create a new channel for each test so they can run in parallel - see the test file for the naming scheme
-- Tests always run a build step and auth step. After running them once, you can skip either in the future with `bun run test:fast` or `bun run SKIP_BUILD=1 SKIP_AUTH=1 playwright test`
-- Tests are unreliable because Slack just may not load sometimes or cause issues with tests. The playwright config allows for 2 retries, which is reliable enough to verify if the tests actually work. Tests may be marked as flaky but it's expected.
-- Can't use remote runners because Slack can require an OTP code. If you login on your own machine first and then run tests locally it should work automatically. I've seen workarounds where people scan a test email for an OTP code but seems overkill (could do something for free using CF email workers)
-- Tests run once a week to ensure there haven't been any UI changes to Slack that break the extension.
+- You can either use the password login in `--headed` mode to manually solve any potential captcha, or create a testmail.app account and setup your .env (and create a slack account with that email) which will use the magic link auth without any manual intervention needed. CI always uses magic link auth.
+- Tests always run a build step and auth step. After running them once, you can skip them in the future with `bun run test:fast` or `bun run SKIP_BUILD=1 SKIP_AUTH=1 playwright test`
+- `bun run setup-test:auth-password` for password based auth, `bun run setup-test:auth-magic-link` for magic link auth with testmail.app
+
+My local testing workflow
+- `bun run setup-test:build` to build after any code changes
+- `bun run setup-test:auth-password` if my Slack login has expired in the playwright browser
+- `bun run test:fast` whenever testing with build + auth ready
