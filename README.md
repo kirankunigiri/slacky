@@ -37,6 +37,14 @@ Because storage is async, you must ensure that settings are loaded first before 
 - In react, use the `withStorageLoaded` wrapper to make a component hidden until storage loads. Ex: `const SettingsPage = withStorageLoaded(SettingsPageImpl);` This is used on all top level components (ui pages/content script buttons)
 - Outside react, call `await loadStorage()` from `store.ts` before using the settings store
 
+--- 
+
+Pages
+- options.html - The settings menu, accessible by: right-click the extension icon in your browser toolbar to open the context menu -> click options
+- popup.html - The settings menu popup, accessible by clicking the extension icon
+- settings.html - The settings menu embedded into Slack, accessible from the Slacky icon in the Slack toolbar (injected via content script)
+- tutorial.html - The tutorial page, which automatically opens post-installation. Also accessible by clicking "View tutorial" in any settings page
+
 ---
 
 ### 🧪 Tests
