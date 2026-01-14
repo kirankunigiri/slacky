@@ -35,7 +35,7 @@ function SettingsButton() {
 	return (
 		<>
 			<button
-				style={{ marginRight: '4px' }}
+				style={{ marginLeft: '4px' }}
 				// eslint-disable-next-line better-tailwindcss/no-unregistered-classes
 				className="c-button-unstyled p-top_nav__button p-top_nav__help"
 				data-qa="slacky-settings-button"

@@ -30,7 +30,7 @@ export default defineContentScript({
 			parentSelector: '[class$="top_nav__right_container"]',
 			componentId: 'slacky-settings',
 			Component: SettingsButton,
-			position: 'child-first',
+			position: 'child-last',
 		});
 	},
 });
