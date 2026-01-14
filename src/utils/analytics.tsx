@@ -48,18 +48,25 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 function ErrorFallback({ children }: { children: React.ReactNode }) {
 	return (
 		<PostHogErrorBoundary fallback={(
-			<div className="p-4 text-center">
-				<span className="text-red-500">Slacky has crashed.</span>
-				<br />
-				<a
-					className="hover:underline"
-					href="https://github.com/kirankunigiri/slacky/issues/new/choose"
-					target="_blank"
-					rel="noreferrer"
+			<div className="flex flex-col items-center gap-4 p-4 text-center">
+				<div>
+					<p className="text-red-600">Slacky has crashed.</p>
+					<a
+						className="hover:underline"
+						href="https://github.com/kirankunigiri/slacky/issues/new/choose"
+						target="_blank"
+						rel="noreferrer"
+					>
+						Please file an issue on{' '}
+						<span className="text-blue-500">GitHub</span>
+					</a>
+				</div>
+				<button
+					onClick={() => window.location.reload()}
+					className="cursor-pointer rounded-full bg-blue-700 px-4 py-1 text-xs! text-white hover:bg-blue-800"
 				>
-					Please file an issue on{' '}
-					<span className="text-blue-500">GitHub</span>
-				</a>
+					Restart
+				</button>
 			</div>
 		)}
 		>
