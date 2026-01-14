@@ -57,3 +57,6 @@ My local testing workflow
 - `bun run setup-test:build` to build after any code changes
 - `bun run setup-test:auth-password` if my Slack login has expired in the playwright browser
 - `bun run test:fast` whenever testing with build + auth ready
+
+### Notes
+If there ends up being any new features to add, I would migrate this project over to CRXJS. Saving any content script file takes 5+ seconds to reload with WXT and it's basically unusable for development until [support for ESM](https://github.com/wxt-dev/wxt/issues/357) is added.

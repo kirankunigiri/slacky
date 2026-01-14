@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging';
+import { getBackgroundService } from '@/utils/messaging-keys';
 import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
 import { defineContentScript } from '#imports';
 

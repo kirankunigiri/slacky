@@ -1,14 +1,13 @@
-import { defineProxyService } from '@webext-core/proxy-service';
+import { trackEvent, type TrackEventArgs } from './analytics';
 
-import { trackEvent, TrackEventArgs } from './analytics';
-
+/**
+ * Background service implementation
+ * This file imports analytics and should only be imported by the background script
+ */
 class BackgroundService {
 	trackEvent(params: TrackEventArgs) {
 		trackEvent(params);
 	}
 }
 
-export const [registerBackgroundService, getBackgroundService] = defineProxyService(
-	'BackgroundService',
-	() => new BackgroundService(),
-);
+export const createBackgroundService = () => new BackgroundService();

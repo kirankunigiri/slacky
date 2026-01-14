@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging';
+import { getBackgroundService } from '@/utils/messaging-keys';
 import { featureUsageCounts$, MessageExportFormat } from '@/utils/store';
 
 /**

@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging';
+import { getBackgroundService } from '@/utils/messaging-keys';
 import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
 
 /** Checks if a URL's hostname matches a domain filter (including subdomains) */

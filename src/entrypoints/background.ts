@@ -1,4 +1,5 @@
-import { registerBackgroundService } from '@/utils/messaging';
+import { createBackgroundService } from '@/utils/messaging';
+import { registerBackgroundService } from '@/utils/messaging-keys';
 import { browser, defineBackground } from '#imports';
 
 export default defineBackground(() => {
@@ -11,6 +12,6 @@ export default defineBackground(() => {
 		}
 	});
 
-	// Listen for messages from content scripts
-	registerBackgroundService();
+	// Listen for messages from content
+	registerBackgroundService(createBackgroundService());
 });
