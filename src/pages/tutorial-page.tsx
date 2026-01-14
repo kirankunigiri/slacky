@@ -86,7 +86,7 @@ function TutorialPageContent() {
 			{/* Show settings button in Slack */}
 			<Section
 				title="Show settings button in Slack"
-				description="The Slacky settings button will appear in the top right corner of the Slack web app. Clicking it will open the settings."
+				description="The Slacky settings button will appear in the top right corner of the Slack web app - click it to open the settings. You can also always access the settings by clicking on the extension icon in your browser toolbar."
 			>
 				<SettingShowSettingsButtonInSlack />
 				<Space h="md" />
