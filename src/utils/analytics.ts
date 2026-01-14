@@ -4,11 +4,10 @@ import 'posthog-js/dist/exception-autocapture';
 import 'posthog-js/dist/dead-clicks-autocapture';
 
 import { PostHog, PostHogConfig } from 'posthog-js/dist/module.full.no-external';
-import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react';
 import { v7 as uuidv7 } from 'uuid';
 
 import { clientEnv as env } from '@/utils/client-env';
-import { defaultSettingsPropertiesWithTheme, MessageExportFormat } from '@/utils/store';
+import { defaultSettingsPropertiesWithTheme, MessageExportFormat, Settings, settings$ } from '@/utils/store';
 import { browser } from '#imports';
 
 /**
@@ -18,61 +17,10 @@ import { browser } from '#imports';
 
 export const ph = new PostHog();
 const missingPostHogCredentials = !env.VITE_PUBLIC_POSTHOG_HOST || !env.VITE_PUBLIC_POSTHOG_KEY;
-const disableAnalytics = missingPostHogCredentials || import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
-if (!disableAnalytics) {
+export const DISABLE_ANALYTICS = missingPostHogCredentials || import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
+if (!DISABLE_ANALYTICS) {
 	const scriptType = typeof document !== 'undefined' ? 'ui' : 'background';
 	setupPostHog({ posthog: ph, type: scriptType });
-}
-
-/** React provider for PostHog */
-export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-	if (disableAnalytics) {
-		console.log('Analytics disabled');
-		return (
-			<ErrorFallback>
-				{children}
-			</ErrorFallback>
-		);
-	}
-
-	return (
-		// @ts-expect-error - PostHogProvider is not type compatible with PostHog client from module.no-external
-		<PostHogProvider client={ph}>
-			<ErrorFallback>
-				{children}
-			</ErrorFallback>
-		</PostHogProvider>
-	);
-}
-
-function ErrorFallback({ children }: { children: React.ReactNode }) {
-	return (
-		<PostHogErrorBoundary fallback={(
-			<div className="flex flex-col items-center gap-4 p-4 text-center">
-				<div>
-					<p className="text-red-600">Slacky has crashed.</p>
-					<a
-						className="hover:underline"
-						href="https://github.com/kirankunigiri/slacky/issues/new/choose"
-						target="_blank"
-						rel="noreferrer"
-					>
-						Please file an issue on{' '}
-						<span className="text-blue-500">GitHub</span>
-					</a>
-				</div>
-				<button
-					onClick={() => window.location.reload()}
-					className="cursor-pointer rounded-full bg-blue-700 px-4 py-1 text-xs! text-white hover:bg-blue-800"
-				>
-					Restart
-				</button>
-			</div>
-		)}
-		>
-			{children}
-		</PostHogErrorBoundary>
-	);
 }
 
 type PostHogClientType = 'ui' | 'background';
@@ -142,6 +90,25 @@ async function setupPostHog({
 		// default settings properties - set
 		posthog.setPersonProperties(defaultSettingsPropertiesWithTheme);
 	}
+
+	// Set up analytics observer for settings changes at module level (runs once)
+	settings$.onChange(({ value, getPrevious }) => {
+		const previousValue = getPrevious();
+		if (previousValue) {
+			(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
+				if (value[key] !== previousValue[key]) {
+					trackEvent({
+						eventName: 'setting_updated',
+						eventProperties: {
+							setting: key,
+							value: value[key],
+						},
+						userProperties: { [`setting_${key}`]: value[key] },
+					});
+				}
+			});
+		}
+	});
 };
 
 interface UserInfo {

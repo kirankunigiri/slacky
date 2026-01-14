@@ -1,13 +1,12 @@
 import { observable, syncState, when } from '@legendapp/state';
 import { synced } from '@legendapp/state/sync';
 
-import { trackEvent } from '@/utils/analytics';
 import { storage } from '#imports';
 
 export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
 
 /** Settings stored in Chrome storage */
-interface Settings {
+export interface Settings {
 	remove_all_embed_links: boolean
 	embed_link_filters: string[]
 	auto_confirm_embed_removal: boolean
@@ -54,20 +53,8 @@ export const settings$ = observable<Settings>(
 			return defaultSettings;
 		},
 
-		// Save settings to WXT storage and capture analytics event
-		set: async ({ value, changes }) => {
-			for (const change of changes) {
-				const changePath = change.path[0];
-				const changeValue = value[changePath as keyof Settings];
-				trackEvent({
-					eventName: 'setting_updated',
-					eventProperties: {
-						setting: changePath,
-						value: changeValue,
-					},
-					userProperties: { [`setting_${changePath}`]: changeValue },
-				});
-			}
+		// Save settings to WXT storage
+		set: async ({ value }) => {
 			await storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(value));
 		},
 
