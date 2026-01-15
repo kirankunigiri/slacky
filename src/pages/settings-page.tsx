@@ -8,12 +8,14 @@ import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
+import { EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
 import { withStorageLoaded } from '@/utils/utils';
 import { browser } from '#imports';
 
 export function SettingsPageImpl() {
 	const isPopup = window.location.pathname.endsWith('popup.html');
 	if (isPopup) {
+		// Keep size styles synced with popup.css. We use a separate CSS file to ensure the popup size doesn't start at 0 for a few ms while react loads
 		return (
 			<div className="h-[500px]! max-h-[500px]! w-[340px]! min-w-[340px]! overflow-hidden">
 				<SettingsPageContent />
@@ -24,7 +26,15 @@ export function SettingsPageImpl() {
 	const isSettings = window.location.pathname.endsWith('settings.html');
 	if (isSettings) {
 		return (
-			<div className="h-[500px]! max-h-[500px]! w-[420px]! min-w-[420px]! overflow-hidden">
+			<div
+				className="overflow-hidden"
+				style={{
+					height: `${EMBEDDED_SETTINGS_MODAL_SIZE.height}px`,
+					maxHeight: `${EMBEDDED_SETTINGS_MODAL_SIZE.height}px`,
+					width: `${EMBEDDED_SETTINGS_MODAL_SIZE.width}px`,
+					minWidth: `${EMBEDDED_SETTINGS_MODAL_SIZE.width}px`,
+				}}
+			>
 				<SettingsPageContent />
 			</div>
 		);

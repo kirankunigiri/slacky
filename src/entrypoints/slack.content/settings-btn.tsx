@@ -2,6 +2,7 @@ import { useValue } from '@legendapp/state/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
 import { getBackgroundService } from '@/utils/messaging-keys';
 import { settings$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
@@ -93,8 +94,8 @@ function SettingsButton() {
 					<div
 						style={{
 							// Extra 2px needed on height/width to remove iframe scrollbars. Alternatively set overflow:hidden on the body
-							width: '422px',
-							height: '502px',
+							width: `${EMBEDDED_SETTINGS_MODAL_SIZE.width + 2}px`,
+							height: `${EMBEDDED_SETTINGS_MODAL_SIZE.height + 2}px`,
 							overflow: 'hidden',
 							position: 'relative',
 							boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
