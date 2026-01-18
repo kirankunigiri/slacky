@@ -9,7 +9,7 @@ Have an idea for a new feature? Feel free to open a PR or [create a new issue](h
 ---
 
 ### Development
-```
+```bash
 bun i
 bun dev
 ```
@@ -18,6 +18,15 @@ bun dev
 - Assets go in public/ or src/assets/
 
 ---
+
+### Build
+```bash
+# chrome
+bun wxt zip
+
+# firefox
+bun wxt zip -b firefox
+```
 
 ### 📚 Libraries
 - WXT

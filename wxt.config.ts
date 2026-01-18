@@ -10,7 +10,7 @@ const isBuildCommand = process.argv.includes('build');
 // See https://wxt.dev/api/config.html
 export default defineConfig({
 	outDirTemplate: isTestBuild ? 'test-build' : '{{browser}}-mv{{manifestVersion}}{{modeSuffix}}',
-	manifest: async ({ mode }) => {
+	manifest: async ({ mode, browser }) => {
 		const isDev = mode === 'development';
 
 		// Async import env vars since they are not available before this function
@@ -52,7 +52,24 @@ export default defineConfig({
 					matches: ['*://*.slack.com/*'],
 				},
 			],
+			// Firefox-specific: Declare data collection for analytics
+			// Required for new extensions as of Nov 3, 2025
+			...(browser === 'firefox' && {
+				browser_specific_settings: {
+					gecko: {
+						id: '@slacky',
+						data_collection_permissions: {
+							required: ['none'],
+							optional: ['technicalAndInteraction'],
+						},
+					},
+				},
+			}),
 		};
+	},
+	// Include .env file for firefox sources to avoid hash mismatch errors in build
+	zip: {
+		includeSources: ['.env'],
 	},
 	srcDir: 'src',
 	imports: false,

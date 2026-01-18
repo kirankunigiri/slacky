@@ -1,6 +1,6 @@
 {
-	"name": "slacky",
-	"description": "manifest.json description",
+	"name": "Slacky",
+	"description": "A better Slack experience on the web",
 	"version": "1.0",
 	"private": true,
 	"type": "module",
