@@ -96,7 +96,7 @@ async function setupPostHog({
 		const previousValue = getPrevious();
 		if (previousValue) {
 			(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
-				if (value[key] !== previousValue[key]) {
+				if (JSON.stringify(value[key]) !== JSON.stringify(previousValue[key])) {
 					trackEvent({
 						eventName: 'setting_updated',
 						eventProperties: {

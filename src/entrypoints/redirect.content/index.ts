@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging-keys';
+import { sendMessage } from '@/utils/messaging';
 import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
 import { defineContentScript } from '#imports';
 
@@ -50,7 +50,7 @@ const findAndOpenBrowserSlackLink = async () => {
 			const href = link.getAttribute('href');
 			if (href) {
 				featureUsageCounts$.open_slack_links_in_browser.set(v => v + 1);
-				getBackgroundService().trackEvent({ eventName: 'skipped_app_redirect' });
+				sendMessage('trackEvent', { eventName: 'skipped_app_redirect' });
 				window.location.href = href;
 				return true;
 			}

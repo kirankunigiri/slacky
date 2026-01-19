@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging-keys';
+import { sendMessage } from '@/utils/messaging';
 import { featureUsageCounts$, MessageExportFormat } from '@/utils/store';
 
 /**
@@ -203,7 +203,7 @@ export const exportMessages = async ({ type, exportFormat }: ExportMessagesOptio
 	// Track the export event
 	const exportDuration = (performance.now() - startTime) / 1000;
 	featureUsageCounts$.message_export_format.set(v => v + 1);
-	getBackgroundService().trackEvent({
+	sendMessage('trackEvent', {
 		eventName: 'messages_exported',
 		eventProperties: {
 			type,

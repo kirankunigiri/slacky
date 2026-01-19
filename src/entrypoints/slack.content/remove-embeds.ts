@@ -1,4 +1,4 @@
-import { getBackgroundService } from '@/utils/messaging-keys';
+import { sendMessage } from '@/utils/messaging';
 import { featureUsageCounts$, loadStorage, settings$ } from '@/utils/store';
 
 /** Checks if a URL's hostname matches a domain filter (including subdomains) */
@@ -50,7 +50,7 @@ const removeEmbeds = () => {
 			try {
 				const url = new URL(href);
 				featureUsageCounts$.remove_embeds.set(v => v + 1);
-				getBackgroundService().trackEvent({
+				sendMessage('trackEvent', {
 					eventName: 'embed_link_removed',
 					eventProperties: {
 						url: href,
@@ -71,7 +71,7 @@ const removeEmbeds = () => {
 			// Track when user manually clicked delete and auto-confirm kicked in
 			if (!extensionInitiatedRemoval) {
 				featureUsageCounts$.auto_confirm_embed_removal.set(v => v + 1);
-				getBackgroundService().trackEvent({
+				sendMessage('trackEvent', {
 					eventName: 'auto_confirmed_embed_removal',
 				});
 			}

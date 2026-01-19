@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
-import { getBackgroundService } from '@/utils/messaging-keys';
+import { sendMessage } from '@/utils/messaging';
 import { settings$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
 import { browser } from '#imports';
@@ -26,7 +26,7 @@ function SettingsButton() {
 	const handleOpen = () => {
 		setIsModalOpen(true);
 		setTimeout(() => setIsAnimating(true), IFRAME_LOAD_DELAY_MS);
-		getBackgroundService().trackEvent({
+		sendMessage('trackEvent', {
 			eventName: 'slacky_button_clicked',
 		});
 	};

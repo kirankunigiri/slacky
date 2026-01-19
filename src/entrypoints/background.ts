@@ -1,5 +1,5 @@
-import { createBackgroundService } from '@/utils/messaging';
-import { registerBackgroundService } from '@/utils/messaging-keys';
+import { trackEvent } from '@/utils/analytics';
+import { onMessage } from '@/utils/messaging';
 import { browser, defineBackground } from '#imports';
 
 export default defineBackground(() => {
@@ -12,6 +12,8 @@ export default defineBackground(() => {
 		}
 	});
 
-	// Listen for messages from content
-	registerBackgroundService(createBackgroundService());
+	// Message handlers
+	onMessage('trackEvent', (message) => {
+		trackEvent(message.data);
+	});
 });

@@ -1,13 +1,11 @@
-import { trackEvent, type TrackEventArgs } from './analytics';
+import { defineExtensionMessaging } from '@webext-core/messaging';
 
-/**
- * Background service implementation
- * This file imports analytics and should only be imported by the background script
- */
-class BackgroundService {
-	trackEvent(params: TrackEventArgs) {
-		trackEvent(params);
-	}
+import type { TrackEventArgs } from './analytics';
+
+// This file must only contain type imports to avoid bundling background script code in content scripts
+
+interface MessagingProtocol {
+	trackEvent(data: TrackEventArgs): void
 }
 
-export const createBackgroundService = () => new BackgroundService();
+export const { sendMessage, onMessage } = defineExtensionMessaging<MessagingProtocol>();
