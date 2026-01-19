@@ -3,6 +3,7 @@ import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { exportMessages, ExportMessagesOptions } from '@/entrypoints/slack.content/export';
+import { COPY_BTN_RESET_DELAY } from '@/utils/constants';
 import { settings$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
 
@@ -27,7 +28,7 @@ function ExportMessagesButton({ type }: Pick<ExportMessagesOptions, 'type'>) {
 			setCopyState('copied');
 			setTimeout(() => {
 				setCopyState('idle');
-			}, 2000);
+			}, COPY_BTN_RESET_DELAY);
 		} catch {
 			setCopyState('idle');
 		}

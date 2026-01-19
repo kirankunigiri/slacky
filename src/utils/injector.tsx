@@ -10,6 +10,7 @@ export interface InjectComponentOptions {
 	componentId: string
 	Component: React.FC
 	position?: InjectPosition
+	parentStyle?: React.CSSProperties
 }
 
 interface RenderComponentOptions {
@@ -17,6 +18,7 @@ interface RenderComponentOptions {
 	componentId: string
 	Component: React.FC
 	position: InjectPosition
+	parentStyle?: React.CSSProperties
 }
 
 /**
@@ -39,12 +41,12 @@ export function checkNestedNodesForSelector(node: Node, selector: string) {
 }
 
 /** Injects a component into the given parent */
-export const injectComponent = ({ parentSelector, componentId, Component, position = 'child-last' }: InjectComponentOptions) => {
+export const injectComponent = ({ parentSelector, componentId, Component, position = 'child-last', parentStyle }: InjectComponentOptions) => {
 	// Initial check for the parent element on first call
 	const initialParentComp = document.querySelector(parentSelector) as HTMLElement;
 	const initialMyComp = document.getElementById(componentId);
 	if (initialParentComp && !initialMyComp) {
-		renderComponent({ container: initialParentComp, componentId, Component, position });
+		renderComponent({ container: initialParentComp, componentId, Component, position, parentStyle });
 	}
 
 	const observer = new MutationObserver((mutations) => {
@@ -58,7 +60,7 @@ export const injectComponent = ({ parentSelector, componentId, Component, positi
 		const parentAdded = mutations.some(mutation => Array.from(mutation.addedNodes).some(node => checkNestedNodesForSelector(node, parentSelector)));
 
 		// If the parent was added, then render the component
-		if (parentComp && parentAdded) renderComponent({ container: parentComp, componentId, Component, position });
+		if (parentComp && parentAdded) renderComponent({ container: parentComp, componentId, Component, position, parentStyle });
 
 		// Reconnect observer after update
 		observer.observe(document.body, { childList: true, subtree: true });
@@ -75,9 +77,14 @@ export const injectComponent = ({ parentSelector, componentId, Component, positi
  * @param Component The React component to render
  * @param injectPosition Position to inject the component relative to the container
  */
-const renderComponent = ({ container, componentId, Component, position }: RenderComponentOptions) => {
+const renderComponent = ({ container, componentId, Component, position, parentStyle }: RenderComponentOptions) => {
 	const root = document.createElement('div');
 	root.id = `${componentId}-parent`;
+
+	// Apply parent styles if provided
+	if (parentStyle) {
+		Object.assign(root.style, parentStyle);
+	}
 
 	// Inject based on position
 	switch (position) {

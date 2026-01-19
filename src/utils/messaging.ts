@@ -6,6 +6,8 @@ import type { TrackEventArgs } from './analytics';
 
 interface MessagingProtocol {
 	trackEvent(data: TrackEventArgs): void
+	sendSlackMessage(data: { text: string }): void
+	submitSlackMessage(data: { text: string }): boolean
 }
 
 export const { sendMessage, onMessage } = defineExtensionMessaging<MessagingProtocol>();
