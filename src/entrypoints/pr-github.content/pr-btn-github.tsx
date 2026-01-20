@@ -140,22 +140,23 @@ function SendPRButtonGitHub() {
 					}}
 				>
 					<ul className="ActionListWrap">
-						{channels.map((channel, index) => (
-							<li
-								key={index}
-								onClick={() => handleChannelSelect(channel)}
-								className="ActionListItem"
-							>
-								<div
-									className="ActionListContent ActionListContent--visual16"
+						{channels
+							.filter(channel => !defaultChannel || channel.url !== defaultChannel.url)
+							.map((channel, index) => (
+								<li
+									key={index}
+									onClick={() => handleChannelSelect(channel)}
+									className="ActionListItem"
 								>
-									<span className="ActionListItem-visual ActionListItem-visual--leading">#</span>
-									<span className="ActionListItem-label">{channel.name}</span>
-								</div>
-							</li>
-						))}
+									<div
+										className="ActionListContent ActionListContent--visual16"
+									>
+										<span className="ActionListItem-visual ActionListItem-visual--leading">#</span>
+										<span className="ActionListItem-label">{channel.name}</span>
+									</div>
+								</li>
+							))}
 					</ul>
-					{/* </div> */}
 				</div>
 			)}
 		</div>

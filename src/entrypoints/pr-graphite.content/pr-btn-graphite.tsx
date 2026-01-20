@@ -172,45 +172,47 @@ function SendPRButtonGraphite({ buttonClass }: { buttonClass: string }) {
 						boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1)',
 					}}
 				>
-					{channels.map((channel, index) => (
-						<div
-							key={index}
-							onClick={() => handleChannelSelect(channel)}
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								gap: 'var(--gds-space-xs)',
-								padding: '6px 8px',
-								borderRadius: 'var(--gds-radius-s)',
-								cursor: 'pointer',
-								transition: 'background-color 0.15s ease',
-								color: 'var(--text-color-primary)',
-								fontSize: '14px',
-								lineHeight: '20px',
-							}}
-							onMouseEnter={(e) => {
-								e.currentTarget.style.backgroundColor = 'var(--btn-color-neutral-hover)';
-							}}
-							onMouseLeave={(e) => {
-								e.currentTarget.style.backgroundColor = 'transparent';
-							}}
-						>
+					{channels
+						.filter(channel => !defaultChannel || channel.url !== defaultChannel.url)
+						.map((channel, index) => (
 							<div
+								key={index}
+								onClick={() => handleChannelSelect(channel)}
 								style={{
 									display: 'flex',
 									alignItems: 'center',
-									justifyContent: 'center',
-									width: '16px',
-									height: '16px',
-									flexShrink: 0,
-									opacity: 0.8,
+									gap: 'var(--gds-space-xs)',
+									padding: '6px 8px',
+									borderRadius: 'var(--gds-radius-s)',
+									cursor: 'pointer',
+									transition: 'background-color 0.15s ease',
+									color: 'var(--text-color-primary)',
+									fontSize: '14px',
+									lineHeight: '20px',
+								}}
+								onMouseEnter={(e) => {
+									e.currentTarget.style.backgroundColor = 'var(--btn-color-neutral-hover)';
+								}}
+								onMouseLeave={(e) => {
+									e.currentTarget.style.backgroundColor = 'transparent';
 								}}
 							>
-								<span style={{ fontSize: '16px', fontWeight: 600 }}>#</span>
+								<div
+									style={{
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										width: '16px',
+										height: '16px',
+										flexShrink: 0,
+										opacity: 0.8,
+									}}
+								>
+									<span style={{ fontSize: '16px', fontWeight: 600 }}>#</span>
+								</div>
+								<span style={{ flex: 1 }}>{channel.name}</span>
 							</div>
-							<span style={{ flex: 1 }}>{channel.name}</span>
-						</div>
-					))}
+						))}
 				</div>
 			)}
 		</div>
