@@ -80,7 +80,7 @@ function FilterInput({
 				data-qa={`domain-filter-input-${index}`}
 			/>
 			{showError && (
-				<Tooltip label="Invalid domain. Example: github.com">
+				<Tooltip label="Invalid domain. Example: github.com" openDelay={0}>
 					<IconExclamationCircle className="mr-1 size-5 text-red-400" />
 				</Tooltip>
 			)}

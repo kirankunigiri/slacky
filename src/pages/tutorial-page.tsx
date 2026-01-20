@@ -2,6 +2,7 @@ import 'photoswipe/dist/photoswipe.css';
 
 import { useValue } from '@legendapp/state/react';
 import { Badge, Button, Divider, Space, Text } from '@mantine/core';
+import { List } from '@mantine/core';
 import { IconBrandGithub } from '@tabler/icons-react';
 import ReactDOM from 'react-dom/client';
 import { Gallery, Item } from 'react-photoswipe-gallery';
@@ -12,6 +13,7 @@ import Header from '@/components/header';
 import RemoveEmbedSettings from '@/components/settings/embed-setting';
 import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
+import PRMessageSettings from '@/components/settings/pr-message';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
 import { FeatureUsageCounts, featureUsageCounts$ } from '@/utils/store';
@@ -56,6 +58,15 @@ function TutorialPageContent() {
 					<LightboxImage src="https://i.imgur.com/kG2c5WO.gif" width={400} height={549} className="" caption="Before" />
 					<LightboxImage src="https://i.imgur.com/06JOUwj.gif" width={400} height={549} className="" caption="After" />
 				</div>
+			</Section>
+
+			{/* Send PR Message */}
+			<Section
+				title="Copy/Send PR Message"
+				description="Add a button to GitHub and Graphite to copy a formatted PR message or automatically send a message to Slack. View available template variables with the info icon tooltip."
+				settingName="pr_message"
+			>
+				<PRMessageSettings isTutorialPage />
 			</Section>
 
 			{/* Open Slack links in browser */}

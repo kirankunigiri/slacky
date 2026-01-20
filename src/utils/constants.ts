@@ -1,6 +1,6 @@
 export const EMBEDDED_SETTINGS_MODAL_SIZE = {
-	height: 500,
-	width: 420,
+	height: 600,
+	width: 480,
 };
 
 export const COPY_BTN_RESET_DELAY = 2000;

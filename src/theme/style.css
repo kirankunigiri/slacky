@@ -494,6 +494,10 @@
 		border: 1px solid var(--mantine-color-default-border);
 		border-radius: var(--mantine-radius-default);
 	}
+
+	.mantine-Modal-title {
+		font-weight: bold;
+	}
 }
 
 /* Popover Start*/
@@ -796,4 +800,37 @@
 /* Chart Tooltip */
 .mantine-ChartTooltip-tooltip {
 	border: 1px solid var(--mantine-color-default-border);
+}
+
+/* List */
+.mantine-List-root {
+	list-style: revert;
+	
+	.mantine-List-item {
+		list-style: inherit;
+		display: list-item;
+	}
+	
+	&[data-type="unordered"] {
+		list-style-type: disc;
+		
+		.mantine-List-item {
+			list-style-type: disc;
+		}
+	}
+	
+	&[data-type="ordered"] {
+		list-style-type: decimal;
+		
+		.mantine-List-item {
+			list-style-type: decimal;
+		}
+	}
+}
+
+/* Input Label */
+.mantine-InputWrapper-label {
+	margin-bottom: 2px;
+	opacity: 0.7;
+	font-weight: normal;
 }

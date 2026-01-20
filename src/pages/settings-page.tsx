@@ -6,6 +6,7 @@ import Header from '@/components/header';
 import RemoveEmbedSettings from '@/components/settings/embed-setting';
 import MessageExportSettings from '@/components/settings/export-settings';
 import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, SettingShowSettingsButtonInSlack } from '@/components/settings/general-settings';
+import PRMessageSettings from '@/components/settings/pr-message';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
 import { EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
@@ -17,7 +18,7 @@ export function SettingsPageImpl() {
 	if (isPopup) {
 		// Keep size styles synced with popup.css. We use a separate CSS file to ensure the popup size doesn't start at 0 for a few ms while react loads
 		return (
-			<div className="h-[500px]! max-h-[500px]! w-[340px]! min-w-[340px]! overflow-hidden">
+			<div className="h-[600px]! max-h-[600px]! w-[400px]! min-w-[400px]! overflow-hidden">
 				<SettingsPageContent />
 			</div>
 		);
@@ -62,9 +63,6 @@ function SettingsPageContent() {
 				<ScrollArea
 					scrollbarSize={6}
 					offsetScrollbars
-					classNames={{
-						viewport: 'scroll-shadow',
-					}}
 					className="mr-0.5 h-full"
 				>
 					<div className="px-5">
@@ -82,6 +80,15 @@ function SettingsPageContent() {
 						<p className="text-base font-medium">Message Export Format</p>
 						<Space h="xs" />
 						<MessageExportSettings />
+						<Space h="xs" />
+
+						{/* Send PR Message */}
+						<Space h="md" />
+						<Divider className="px-5" variant="dashed" />
+						<Space h="sm" />
+						<p className="text-base font-medium">Copy/Send PR Message</p>
+						<Space h="sm" />
+						<PRMessageSettings />
 						<Space h="xs" />
 					</div>
 				</ScrollArea>

@@ -1,21 +1,20 @@
-import PRButtonGraphite from '@/entrypoints/pr-graphite.content/pr-btn-graphite';
+import PRButtonsGraphite from '@/entrypoints/pr-graphite.content/pr-btn-graphite';
 import { injectComponent } from '@/utils/injector';
 import { defineContentScript } from '#imports';
 
 export default defineContentScript({
-	// TODO: narrow pattern for graphite pr's only
-	matches: ['*://app.graphite.com/*'],
+	matches: ['*://app.graphite.com/github/pr/*'],
 	main() {
 		// Settings button
 		injectComponent({
 			parentSelector: '.utilities_flexShrink0__EKj1B',
 			componentId: 'graphite-slacky-pr',
-			Component: PRButtonGraphite,
+			Component: PRButtonsGraphite,
 			position: 'child-first',
 			parentStyle: {
 				display: 'flex',
-				order: 2,
-				gap: '4px',
+				gap: '6px',
+				alignSelf: 'stretch',
 			},
 		});
 	},

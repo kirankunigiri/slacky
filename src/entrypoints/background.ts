@@ -1,7 +1,6 @@
 import { trackEvent } from '@/utils/analytics';
-import { TEST_SLACK_URL } from '@/utils/constants';
 import { onMessage, sendMessage } from '@/utils/messaging';
-import { browser, defineBackground } from '#imports';
+import { Browser, browser, defineBackground } from '#imports';
 
 export default defineBackground(() => {
 	// Open tutorial page on first install
@@ -25,20 +24,44 @@ export default defineBackground(() => {
 	// sendSlackMessage
 	onMessage('sendSlackMessage', async (message) => {
 		// Get all tabs with Slack open
-		const tabs = await browser.tabs.query({ url: `${TEST_SLACK_URL}*` });
+		const tabs = await browser.tabs.query({ url: `${message.data.channel.url}*` });
 
-		// TODO: Only send to the first tab. If no tab found, open in a new tab
-		// Send message to all Slack tabs
-		for (const tab of tabs) {
-			if (tab.id) {
-				// Make the first tab active and focus its window
-				if (tab === tabs[0] && tab.windowId) {
-					await browser.tabs.update(tab.id, { active: true });
-					await browser.windows.update(tab.windowId, { focused: true });
-				}
+		let targetTab: Browser.tabs.Tab;
 
-				await sendMessage('submitSlackMessage', { text: message.data.text }, tab.id);
+		if (tabs.length > 0) {
+			// Use the first existing Slack tab
+			targetTab = tabs[0];
+		} else {
+			// No Slack tab found, open a new one
+			targetTab = await browser.tabs.create({ url: message.data.channel.url });
+		}
+
+		if (targetTab?.id) {
+			// Make the tab active and focus its window
+			if (targetTab.windowId) {
+				await browser.tabs.update(targetTab.id, { active: true });
+				await browser.windows.update(targetTab.windowId, { focused: true });
 			}
+
+			await waitForTabComplete(targetTab.id);
+
+			// browser.tabs.executeScript()
+			await sendMessage('submitSlackMessage', message.data, targetTab.id);
 		}
 	});
 });
+
+async function waitForTabComplete(tabId: number) {
+	const tab = await browser.tabs.get(tabId);
+	if (tab.status === 'complete') return;
+
+	await new Promise<void>((resolve) => {
+		const listener = (updatedTabId: number, info: Browser.tabs.OnUpdatedInfo) => {
+			if (updatedTabId === tabId && info.status === 'complete') {
+				browser.tabs.onUpdated.removeListener(listener);
+				resolve();
+			}
+		};
+		browser.tabs.onUpdated.addListener(listener);
+	});
+}
