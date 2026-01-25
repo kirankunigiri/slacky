@@ -40,7 +40,7 @@ export const defaultSettings = {
 
 	// PR Message settings
 	copy_pr_message: true,
-	enable_send_pr_message: true,
+	enable_send_pr_message: false,
 	auto_submit_pr_message: false,
 	pr_message_channels: [],
 	pr_message_template: DEFAULT_PR_TEMPLATE,

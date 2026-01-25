@@ -1,4 +1,3 @@
-/* eslint-disable better-tailwindcss/no-unregistered-classes */
 import { useValue } from '@legendapp/state/react';
 import { IconCheck, IconCopy } from '@tabler/icons-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -53,9 +52,20 @@ const SlackLogo = () => (
 	</div>
 );
 
-const DropdownIcon = () => (
-	<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className="Icon_icon__yrECt" aria-hidden="true"><path fillRule="evenodd" clipRule="evenodd" d="M12.3536 5.64645C12.1583 5.45118 11.8417 5.45118 11.6464 5.64645L8 9.29289L4.35355 5.64645C4.15829 5.45118 3.84171 5.45118 3.64645 5.64645C3.45118 5.84171 3.45118 6.15829 3.64645 6.35355L7.64645 10.3536L8 10.7071L8.35355 10.3536L12.3536 6.35355C12.5488 6.15829 12.5488 5.84171 12.3536 5.64645Z"></path></svg>
-);
+const DropdownIcon = () => {
+	const iconClass = useMemo(() => findGraphiteButtonClass('Icon_gds-icon__'), []);
+
+	return (
+		<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className={iconClass} width="16" height="16">
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M12.3536 5.64645C12.1583 5.45118 11.8417 5.45118 11.6464 5.64645L8 9.29289L4.35355 5.64645C4.15829 5.45118 3.84171 5.45118 3.64645 5.64645C3.45118 5.84171 3.45118 6.15829 3.64645 6.35355L7.64645 10.3536L8 10.7071L8.35355 10.3536L12.3536 6.35355C12.5488 6.15829 12.5488 5.84171 12.3536 5.64645Z"
+			>
+			</path>
+		</svg>
+	);
+};
 
 function SendPRButtonGraphite({ buttonClass }: { buttonClass: string }) {
 	const channels = useValue(settings$.pr_message_channels);
