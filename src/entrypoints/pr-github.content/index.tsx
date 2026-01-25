@@ -7,10 +7,10 @@ export default defineContentScript({
 	main() {
 		// Send PR and Copy PR Message buttons
 		injectComponent({
-			parentSelector: '[aria-label="Edit Pull Request title"]',
+			parentSelector: '.gh-header-actions',
 			componentId: 'open-pr',
 			Component: PRButtonsGitHub,
-			position: 'sibling-before',
+			position: 'child-first',
 			parentStyle: {
 				display: 'flex',
 				order: 2,

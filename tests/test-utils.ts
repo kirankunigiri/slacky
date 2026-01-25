@@ -98,7 +98,7 @@ export async function verifyUsageCount(
 	await tutorialPage.waitForTimeout(500);
 
 	// Define all trackable features
-	const allFeatures = ['remove_embeds', 'auto_confirm_embed_removal', 'open_slack_links_in_browser', 'message_export_format'];
+	const allFeatures = ['remove_embeds', 'auto_confirm_embed_removal', 'open_slack_links_in_browser', 'message_export_format', 'pr_message'];
 
 	for (const feature of allFeatures) {
 		const badgeSelector = `[data-qa="usage-badge-${feature}"]`;
