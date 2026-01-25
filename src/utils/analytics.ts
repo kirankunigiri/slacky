@@ -3,6 +3,7 @@ import 'posthog-js/dist/posthog-recorder';
 import 'posthog-js/dist/exception-autocapture';
 import 'posthog-js/dist/dead-clicks-autocapture';
 
+import { syncState, when } from '@legendapp/state';
 import { PostHog, PostHogConfig } from 'posthog-js/dist/module.full.no-external';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -88,23 +89,27 @@ export async function setupPostHog({
 	}
 
 	// Automatically track setting changes - emits event and updates person properties
+	// Wait for settings to load before attaching onChange to avoid tracking initial hydration
 	if (type === 'ui') {
-		settings$.onChange(({ value, getPrevious }) => {
-			const previousValue = getPrevious();
-			if (previousValue) {
-				(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
-					if (JSON.stringify(value[key]) !== JSON.stringify(previousValue[key])) {
-						trackEvent({
-							eventName: 'setting_updated',
-							eventProperties: {
-								setting: key,
-								value: value[key],
-							},
-							userProperties: { [`setting_${key}`]: value[key] },
-						});
-					}
-				});
-			}
+		const settingsStatus$ = syncState(settings$);
+		when(settingsStatus$.isLoaded).then(() => {
+			settings$.onChange(({ value, getPrevious }) => {
+				const previousValue = getPrevious();
+				if (previousValue) {
+					(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
+						if (JSON.stringify(value[key]) !== JSON.stringify(previousValue[key])) {
+							trackEvent({
+								eventName: 'setting_updated',
+								eventProperties: {
+									setting: key,
+									value: value[key],
+								},
+								userProperties: { [`setting_${key}`]: value[key] },
+							});
+						}
+					});
+				}
+			});
 		});
 	}
 };
