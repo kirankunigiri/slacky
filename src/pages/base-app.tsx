@@ -5,7 +5,9 @@ import React, { lazy, Suspense } from 'react';
 
 import { shadcnCssVariableResolver } from '@/theme/cssVariablerResolver.ts';
 import { shadcnTheme } from '@/theme/theme.tsx';
-import { DISABLE_ANALYTICS, ph } from '@/utils/analytics';
+import { DISABLE_ANALYTICS, ph, setupPostHog } from '@/utils/analytics';
+
+setupPostHog({ type: 'ui' });
 
 /** react-scan is broken in firefox (it freezes the page) */
 if (import.meta.env.DEV && import.meta.env.BROWSER === 'chrome') {

@@ -18,10 +18,6 @@ import { browser } from '#imports';
 export const ph = new PostHog();
 const missingPostHogCredentials = !env.VITE_PUBLIC_POSTHOG_HOST || !env.VITE_PUBLIC_POSTHOG_KEY;
 export const DISABLE_ANALYTICS = missingPostHogCredentials || import.meta.env.VITE_IS_TEST_BUILD === 'true' || (import.meta.env.DEV && !env.VITE_DEV_ENABLE_ANALYTICS);
-if (!DISABLE_ANALYTICS) {
-	const scriptType = typeof document !== 'undefined' ? 'ui' : 'background';
-	setupPostHog({ posthog: ph, type: scriptType });
-}
 
 type PostHogClientType = 'ui' | 'background';
 
@@ -62,15 +58,15 @@ const backgroundPostHogOptions: Partial<PostHogConfig> = {
 };
 
 /** Setup PostHog for the given client type */
-async function setupPostHog({
-	posthog,
+export async function setupPostHog({
 	type,
 }: {
-	posthog: PostHog
 	type: PostHogClientType
 }) {
+	if (DISABLE_ANALYTICS) return;
+
 	const userInfo = await getUserInfo();
-	posthog.init(env.VITE_PUBLIC_POSTHOG_KEY!, {
+	ph.init(env.VITE_PUBLIC_POSTHOG_KEY!, {
 		...(type === 'ui' ? uiPostHogOptions : backgroundPostHogOptions),
 		bootstrap: {
 			distinctID: userInfo.userId,
@@ -82,33 +78,35 @@ async function setupPostHog({
 	if (userInfo.isNewUser) {
 		// dev user property - set_once
 		if (userInfo.isDevUser) {
-			posthog.setPersonProperties(undefined, {
+			ph.setPersonProperties(undefined, {
 				is_dev_user: true,
 			});
 		}
 
 		// default settings properties - set
-		posthog.setPersonProperties(defaultSettingsPropertiesWithTheme);
+		ph.setPersonProperties(defaultSettingsPropertiesWithTheme);
 	}
 
-	// Set up analytics observer for settings changes at module level (runs once)
-	settings$.onChange(({ value, getPrevious }) => {
-		const previousValue = getPrevious();
-		if (previousValue) {
-			(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
-				if (JSON.stringify(value[key]) !== JSON.stringify(previousValue[key])) {
-					trackEvent({
-						eventName: 'setting_updated',
-						eventProperties: {
-							setting: key,
-							value: value[key],
-						},
-						userProperties: { [`setting_${key}`]: value[key] },
-					});
-				}
-			});
-		}
-	});
+	// Automatically track setting changes - emits event and updates person properties
+	if (type === 'ui') {
+		settings$.onChange(({ value, getPrevious }) => {
+			const previousValue = getPrevious();
+			if (previousValue) {
+				(Object.keys(value) as (keyof Settings)[]).forEach((key) => {
+					if (JSON.stringify(value[key]) !== JSON.stringify(previousValue[key])) {
+						trackEvent({
+							eventName: 'setting_updated',
+							eventProperties: {
+								setting: key,
+								value: value[key],
+							},
+							userProperties: { [`setting_${key}`]: value[key] },
+						});
+					}
+				});
+			}
+		});
+	}
 };
 
 interface UserInfo {

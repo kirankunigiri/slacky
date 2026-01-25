@@ -1,8 +1,10 @@
-import { trackEvent } from '@/utils/analytics';
+import { setupPostHog, trackEvent } from '@/utils/analytics';
 import { onMessage, sendMessage } from '@/utils/messaging';
 import { Browser, browser, defineBackground } from '#imports';
 
 export default defineBackground(() => {
+	setupPostHog({ type: 'background' });
+
 	// Open tutorial page on first install
 	browser.runtime.onInstalled.addListener((details) => {
 		if (details.reason === 'install') {
