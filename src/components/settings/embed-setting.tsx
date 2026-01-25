@@ -1,12 +1,12 @@
 import { useValue } from '@legendapp/state/react';
-import { ActionIcon, Button, Checkbox, Space, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Button, SegmentedControl, Space, TextInput, Tooltip } from '@mantine/core';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { settings$ } from '@/utils/store';
+import { type RemoveEmbedLinkMode, settings$ } from '@/utils/store';
 
 let filterIdCounter = 0;
 const MAX_DOMAIN_FILTERS = 30;
@@ -101,7 +101,7 @@ function FilterInput({
 function RemoveEmbedSettings(
 	{ isTutorialPage = false }: { isTutorialPage?: boolean },
 ) {
-	const removeAllEmbedLinks = useValue(settings$.remove_all_embed_links);
+	const removeEmbedLinkMode = useValue(settings$.remove_embed_link_mode);
 	const embedLinkFilters = useValue(settings$.embed_link_filters);
 
 	// Track stable IDs for each filter (needed for proper exit animations)
@@ -114,7 +114,7 @@ function RemoveEmbedSettings(
 
 	const addFilter = () => {
 		if (!canAddFilter) return;
-		settings$.remove_all_embed_links.set(false);
+		settings$.remove_embed_link_mode.set('filter');
 		const hasEmpty = settings$.embed_link_filters.get().some(f => f === '');
 		if (hasEmpty) {
 			return;
@@ -127,6 +127,11 @@ function RemoveEmbedSettings(
 		filterIdsRef.current.splice(index, 1);
 		const newFilters = settings$.embed_link_filters.get().filter((_, i) => i !== index);
 		settings$.embed_link_filters.set(newFilters);
+
+		// If we deleted the last filter, automatically switch to "remove all" mode
+		if (newFilters.length === 0 && removeEmbedLinkMode === 'filter') {
+			settings$.remove_embed_link_mode.set('all');
+		}
 	};
 
 	const updateFilter = (index: number, value: string) => {
@@ -137,38 +142,45 @@ function RemoveEmbedSettings(
 
 	return (
 		<>
-			{/* Remove All */}
+			{/* Segmented Control */}
 			<div className={clsx(
 				'flex items-center',
 				isTutorialPage ? 'gap-4' : 'justify-between',
 			)}
 			>
-				<Checkbox
-					label="Remove all embeds"
-					id="removeAllEmbedLinks"
-					data-qa="setting-remove-all-embeds"
-					checked={removeAllEmbedLinks}
-					onChange={e => settings$.remove_all_embed_links.set(e.target.checked)}
+				<SegmentedControl
+					withItemsBorders={false}
+					radius="xl"
+					value={removeEmbedLinkMode}
+					onChange={value => settings$.remove_embed_link_mode.set(value as RemoveEmbedLinkMode)}
+					data={[
+						{ label: 'Off', value: 'off' },
+						{ label: 'Remove all', value: 'all' },
+						{ label: 'Remove some', value: 'filter' },
+					] satisfies { label: string, value: RemoveEmbedLinkMode }[]}
+					data-qa="setting-remove-embeds-control"
 				/>
-				<Tooltip label={!canAddFilter ? `You cannot add more than ${MAX_DOMAIN_FILTERS} domain filters` : 'Only embed links from these domains will be automatically removed.'}>
-					<Button
-						variant="light"
-						size="compact-xs"
-						onClick={addFilter}
-						disabled={!canAddFilter || embedLinkFilters.some(f => f === '')}
-						data-qa="add-domain-filter-btn"
-					>
-						<div className="flex items-center gap-1">
-							<PlusIcon size={16} />
-							Domain Filter
-						</div>
-					</Button>
-				</Tooltip>
+				{removeEmbedLinkMode === 'filter' && (
+					<Tooltip label={!canAddFilter ? `You cannot add more than ${MAX_DOMAIN_FILTERS} domain filters` : 'Only embed links from these domains will be automatically removed.'}>
+						<Button
+							variant="light"
+							size="compact-xs"
+							onClick={addFilter}
+							disabled={!canAddFilter || embedLinkFilters.some(f => f === '')}
+							data-qa="add-domain-filter-btn"
+						>
+							<div className="flex items-center gap-1">
+								<PlusIcon size={16} />
+								Domain Filter
+							</div>
+						</Button>
+					</Tooltip>
+				)}
 			</div>
 
-			{/* Domain Filter Section - Hidden when auto-remove is enabled */}
+			{/* Domain Filter Section - Hidden when not "filter" */}
 			<AnimatePresence initial={false}>
-				{!removeAllEmbedLinks && (
+				{removeEmbedLinkMode === 'filter' && (
 					<motion.div
 						initial={{ height: 0, opacity: 0 }}
 						animate={{ height: 'auto', opacity: 1 }}

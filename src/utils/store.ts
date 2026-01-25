@@ -4,6 +4,7 @@ import { synced } from '@legendapp/state/sync';
 import { storage } from '#imports';
 
 export type MessageExportFormat = 'clipboard' | 'markdown_file' | 'disabled';
+export type RemoveEmbedLinkMode = 'off' | 'all' | 'filter';
 export interface SlackChannel {
 	url: string
 	name: string
@@ -15,7 +16,7 @@ export const DEFAULT_PR_TEMPLATE = '{{url}} - {{title}} (+{{linesAdded}} / -{{li
 
 /** Settings stored in Chrome storage */
 export interface Settings {
-	remove_all_embed_links: boolean
+	remove_embed_link_mode: RemoveEmbedLinkMode
 	embed_link_filters: string[]
 	auto_confirm_embed_removal: boolean
 	open_slack_links_in_browser: boolean
@@ -31,7 +32,7 @@ export interface Settings {
 }
 
 export const defaultSettings = {
-	remove_all_embed_links: false,
+	remove_embed_link_mode: 'off',
 	embed_link_filters: [],
 	auto_confirm_embed_removal: true,
 	open_slack_links_in_browser: true,
@@ -89,10 +90,10 @@ export const settings$ = observable<Settings>(
 );
 
 // Track feature usage count
-// remove_all_embed_links and embed_link_filters is merged into a single feature count - remove_embeds
+// remove_embed_link_mode and embed_link_filters is merged into a single feature count - remove_embeds
 // copy_pr_message, send_pr_message, pr_message_channels, enable_send_pr_message, auto_submit_pr_message is merged into a single feature count - pr_message
 export type FeatureUsageCounts = {
-	[K in keyof Omit<Settings, 'show_settings_button_in_slack' | 'remove_all_embed_links' | 'embed_link_filters' | 'copy_pr_message' | 'pr_message_channels' | 'pr_message_template' | 'enable_send_pr_message' | 'auto_submit_pr_message'>]: number;
+	[K in keyof Omit<Settings, 'show_settings_button_in_slack' | 'remove_embed_link_mode' | 'embed_link_filters' | 'copy_pr_message' | 'pr_message_channels' | 'pr_message_template' | 'enable_send_pr_message' | 'auto_submit_pr_message'>]: number;
 } & {
 	remove_embeds: number
 	pr_message: number

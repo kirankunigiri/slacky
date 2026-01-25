@@ -6,7 +6,7 @@ import { deleteAllMessages, deleteLastMessage, getTestMessageLink, openTestSlack
  * Each test uses a separate Slack channel so they can run in parallel.
  *
  * Features:
- * - remove_all_embed_links
+ * - remove_embed_link_mode
  * - embed_link_filters
  * - auto_confirm_embed_removal
  * - open_slack_links_in_browser
@@ -47,18 +47,18 @@ test('show_settings_button_in_slack: toggle visibility', async ({ context, page,
 });
 
 // =============================================================================
-// Test: remove_all_embed_links
+// Test: remove_embed_link_mode
 // Headless 9/10 - works unless slack attachment removing failed
 // =============================================================================
-test('remove_all_embed_links: toggle embed removal', async ({ context, page, extensionId }) => {
+test('remove_embed_link_mode: toggle embed removal', async ({ context, page, extensionId }) => {
 	// Open options page to configure settings
 	const optionsPage = await context.newPage();
 	await optionsPage.goto(`chrome-extension://${extensionId}/options.html`);
 	await optionsPage.waitForLoadState('networkidle');
 
-	// Ensure "Remove all embeds" is unchecked initially (disabled state)
-	const removeAllCheckbox = optionsPage.locator('[data-qa="setting-remove-all-embeds"]');
-	await expect(removeAllCheckbox).not.toBeChecked();
+	// Ensure embed mode is set to "off" initially (test manual removal)
+	const segmentedControl = optionsPage.locator('[data-qa="setting-remove-embeds-control"]');
+	await expect(segmentedControl).toBeVisible();
 
 	// Go to Slack and open tests channel
 	await openTestSlackChannel(page, 'test-1');
@@ -76,10 +76,11 @@ test('remove_all_embed_links: toggle embed removal', async ({ context, page, ext
 	// Verify the attachment is gone before continuing
 	await expect(page.locator('.c-message_attachment')).toHaveCount(0, { timeout: 5000 });
 
-	// ENABLED STATE: Enable the setting
+	// ENABLED STATE: Enable the setting by clicking "Remove all"
 	await optionsPage.bringToFront();
-	await removeAllCheckbox.check();
-	await expect(removeAllCheckbox).toBeChecked();
+	const removeAllOption = segmentedControl.locator('label:has-text("Remove all")');
+	await removeAllOption.click();
+	await optionsPage.waitForTimeout(500);
 
 	// Wait for settings to propagate to content script, then bring Slack to front
 	// await page.waitForTimeout(1000);
@@ -112,9 +113,9 @@ test('embed_link_filters: filter specific domains', async ({ context, page, exte
 	await optionsPage.goto(`chrome-extension://${extensionId}/options.html`);
 	await optionsPage.waitForLoadState('networkidle');
 
-	// Ensure "Remove all embeds" is unchecked
-	const removeAllCheckbox = optionsPage.locator('[data-qa="setting-remove-all-embeds"]');
-	await expect(removeAllCheckbox).not.toBeChecked();
+	// Ensure "Remove all embeds" is set to "off"
+	const segmentedControl = optionsPage.locator('[data-qa="setting-remove-embeds-control"]');
+	await expect(segmentedControl).toBeVisible();
 
 	// Go to Slack and open tests channel
 	await openTestSlackChannel(page, 'test-2');
@@ -128,8 +129,12 @@ test('embed_link_filters: filter specific domains', async ({ context, page, exte
 	await deleteAllMessages(page);
 	await expect(page.locator('.c-message_attachment')).toHaveCount(0, { timeout: 10000 });
 
-	// ENABLED STATE: Add a domain filter for github.com
+	// ENABLED STATE: Set to "Remove some" mode to add a domain filter for github.com
 	await optionsPage.bringToFront();
+	const removeSomeOption = segmentedControl.locator('label:has-text("Remove some")');
+	await removeSomeOption.click();
+	await optionsPage.waitForTimeout(500);
+
 	const addFilterBtn = optionsPage.locator('[data-qa="add-domain-filter-btn"]');
 	await addFilterBtn.click();
 
@@ -176,11 +181,11 @@ test('auto_confirm_embed_removal: auto-confirm dialog', async ({ context, page, 
 	}
 	await expect(autoConfirmCheckbox).not.toBeChecked();
 
-	// Ensure "Remove all embeds" is unchecked (we want manual removal)
-	const removeAllCheckbox = optionsPage.locator('[data-qa="setting-remove-all-embeds"]');
-	if (await removeAllCheckbox.isChecked()) {
-		await removeAllCheckbox.uncheck();
-	}
+	// Ensure embed mode is set to "off" (test manual removal)
+	const segmentedControl = optionsPage.locator('[data-qa="setting-remove-embeds-control"]');
+	const offOption = segmentedControl.locator('label:has-text("Off")');
+	await offOption.click();
+	await optionsPage.waitForTimeout(500);
 
 	// Wait for settings to propagate before going to Slack
 	await page.waitForTimeout(1000);

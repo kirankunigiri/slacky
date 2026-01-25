@@ -7,7 +7,7 @@ import { PostHog, PostHogConfig } from 'posthog-js/dist/module.full.no-external'
 import { v7 as uuidv7 } from 'uuid';
 
 import { clientEnv as env } from '@/utils/client-env';
-import { defaultSettingsPropertiesWithTheme, MessageExportFormat, Settings, settings$ } from '@/utils/store';
+import { defaultSettingsPropertiesWithTheme, MessageExportFormat, type RemoveEmbedLinkMode, Settings, settings$ } from '@/utils/store';
 import { browser } from '#imports';
 
 /**
@@ -198,7 +198,7 @@ interface EmbedLinkRemovedEvent {
 	eventProperties: {
 		url: string
 		domain: string
-		setting_used: 'remove_all_embed_links' | 'embed_link_filters'
+		mode: RemoveEmbedLinkMode
 	}
 	userProperties?: undefined
 }

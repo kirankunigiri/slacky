@@ -32,11 +32,12 @@ const removeEmbeds = () => {
 
 		const href = link.getAttribute('href') || '';
 		await loadStorage();
-		const removeAllEmbedLinks = settings$.remove_all_embed_links.get();
+		const removeEmbedLinkMode = settings$.remove_embed_link_mode.get();
 		const embedLinkFilters = settings$.embed_link_filters.get().filter(filter => filter !== '');
 
 		const matchedFilter = embedLinkFilters.find(filter => matchesDomainFilter(href, filter));
-		if (!removeAllEmbedLinks && !matchedFilter) {
+		// Skip if setting is "off", or if it's "filter" but no filter matches
+		if (removeEmbedLinkMode === 'off' || (removeEmbedLinkMode === 'filter' && !matchedFilter)) {
 			return;
 		}
 
@@ -55,7 +56,7 @@ const removeEmbeds = () => {
 					eventProperties: {
 						url: href,
 						domain: url.hostname,
-						setting_used: removeAllEmbedLinks ? 'remove_all_embed_links' : 'embed_link_filters',
+						mode: removeEmbedLinkMode,
 					},
 				});
 			} catch { /* empty */ }
