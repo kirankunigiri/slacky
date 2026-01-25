@@ -44,7 +44,7 @@ export function checkNestedNodesForSelector(node: Node, selector: string) {
 export const injectComponent = ({ parentSelector, componentId, Component, position = 'child-last', parentStyle }: InjectComponentOptions) => {
 	// Initial check for the parent element on first call
 	const initialParentComp = document.querySelector(parentSelector) as HTMLElement;
-	const initialMyComp = document.getElementById(componentId);
+	const initialMyComp = document.getElementById(`${componentId}-parent`);
 	if (initialParentComp && !initialMyComp) {
 		renderComponent({ container: initialParentComp, componentId, Component, position, parentStyle });
 	}
@@ -59,8 +59,13 @@ export const injectComponent = ({ parentSelector, componentId, Component, positi
 		// Check for the addition of the parent component in the mutations including nested nodes
 		const parentAdded = mutations.some(mutation => Array.from(mutation.addedNodes).some(node => checkNestedNodesForSelector(node, parentSelector)));
 
-		// If the parent was added, then render the component
-		if (parentComp && parentAdded) renderComponent({ container: parentComp, componentId, Component, position, parentStyle });
+		// If the parent was added, remove any orphaned component and re-render
+		if (parentComp && parentAdded) {
+			const myComp = document.getElementById(`${componentId}-parent`);
+			// Remove old orphaned component (HTML exists but React is disconnected)
+			if (myComp) myComp.remove();
+			renderComponent({ container: parentComp, componentId, Component, position, parentStyle });
+		}
 
 		// Reconnect observer after update
 		observer.observe(document.body, { childList: true, subtree: true });
