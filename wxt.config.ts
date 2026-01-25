@@ -41,7 +41,7 @@ export default defineConfig({
 
 		return {
 			version: '1.0',
-			permissions: ['storage'],
+			permissions: ['storage', 'tabs'],
 			content_security_policy: {
 				extension_pages: extensionPagesCsp,
 				...(sandboxCsp && { sandbox: sandboxCsp }),
