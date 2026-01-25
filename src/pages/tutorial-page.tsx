@@ -59,15 +59,6 @@ function TutorialPageContent() {
 				</div>
 			</Section>
 
-			{/* Send PR Message */}
-			<Section
-				title="Copy/Send PR Message"
-				description="Add a button to GitHub and Graphite to copy a formatted PR message or automatically send a message to Slack. View available template variables with the info icon tooltip."
-				settingName="pr_message"
-			>
-				<PRMessageSettings isTutorialPage />
-			</Section>
-
 			{/* Open Slack links in browser */}
 			<Section
 				title="Open Slack links in browser"
@@ -91,6 +82,17 @@ function TutorialPageContent() {
 				</div>
 				<Space h="md" />
 				<LightboxImage src="https://i.imgur.com/BuHZCKG.png" width={1450} height={270} />
+			</Section>
+
+			{/* Send PR Message */}
+			<Section
+				title="Copy/Send PR Message"
+				description="Add a button to GitHub and Graphite to copy a formatted PR message or automatically send a message to Slack. View available template variables with the info icon tooltip."
+				settingName="pr_message"
+			>
+				<PRMessageSettings isTutorialPage />
+				<Space h="md" />
+				<LightboxImage src="https://i.imgur.com/9GijXbU.gif" width={800} height={535} />
 			</Section>
 
 			{/* Show settings button in Slack */}
@@ -143,7 +145,7 @@ function Section({ withBorder = true, title, description, children, settingName 
 			<Space h="3xl" />
 			<div className="px-12">
 				<div className="mb-1! flex items-center gap-4">
-					{title && <Text size="lg" fw="bold">{title}</Text>}
+					{title && <Text size="xl" fw="bold">{title}</Text>}
 					{usageCount !== undefined && usageCount > 0 && (
 						<Badge
 							variant="dot"
@@ -162,6 +164,7 @@ function Section({ withBorder = true, title, description, children, settingName 
 	);
 }
 
+// Convert your demo video to an optimized GIF. Ex: with https://ezgif.com/
 function LightboxImage({ src, width, height, className, caption }: { src: string, width: number, height: number, className?: string, caption?: string }) {
 	return (
 		<Gallery options={{
