@@ -4,8 +4,7 @@ import { IconCheck, IconCopy } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { COPY_BTN_RESET_DELAY } from '@/utils/constants';
-import { sendMessage } from '@/utils/messaging';
-import { getPRMessage } from '@/utils/pr';
+import { copyPRMessageToClipboard, sendPRMessageToSlack } from '@/utils/pr';
 import { settings$, SlackChannel } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
 
@@ -57,24 +56,12 @@ function SendPRButtonGitHub() {
 	};
 
 	const handleChannelSelect = async (channel: SlackChannel) => {
-		const message = await getPRMessage({ platform: 'github' });
-		if (!message) return;
-
-		await sendMessage('sendSlackMessage', {
-			channel: channel,
-			text: message,
-		});
+		await sendPRMessageToSlack({ platform: 'github', channel });
 		setIsDropdownOpen(false);
 	};
 
 	const handleSendToChannel = async (channel: SlackChannel) => {
-		const message = await getPRMessage({ platform: 'github' });
-		if (!message) return;
-
-		await sendMessage('sendSlackMessage', {
-			channel: channel,
-			text: message,
-		});
+		await sendPRMessageToSlack({ platform: 'github', channel });
 	};
 
 	return (
@@ -167,10 +154,9 @@ function CopyPRButtonGitHub() {
 	const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
 
 	const handleCopyClick = async () => {
-		const message = await getPRMessage({ platform: 'github' });
-		if (!message) return;
+		const success = await copyPRMessageToClipboard({ platform: 'github' });
+		if (!success) return;
 
-		await navigator.clipboard.writeText(message);
 		setCopyState('copied');
 		setTimeout(() => {
 			setCopyState('idle');

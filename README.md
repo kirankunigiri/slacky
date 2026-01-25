@@ -77,3 +77,10 @@ My local testing workflow
 
 ### Notes
 If there ends up being any new features to add, I would migrate this project over to CRXJS. Saving any content script file takes 5+ seconds to reload with WXT and it's basically unusable for development until [support for ESM](https://github.com/wxt-dev/wxt/issues/357) is added.
+
+In dev mode with WXT, you can increase build/HMR speed by adding this to the end of the package.json file. This causes errors when building for production, so you have to change this manually when you want to use it.
+```
+"overrides": {
+	"vite": "npm:rolldown-vite@latest"
+}
+```

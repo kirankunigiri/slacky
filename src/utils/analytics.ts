@@ -211,6 +211,23 @@ interface AutoConfirmedEmbedRemovalEvent {
 	userProperties?: undefined
 }
 
+interface PRMessageCopiedEvent {
+	eventName: 'pr_message_copied'
+	eventProperties: {
+		location: 'github' | 'graphite'
+	}
+	userProperties?: undefined
+}
+
+interface PRMessageSentToSlackEvent {
+	eventName: 'pr_message_sent_to_slack'
+	eventProperties: {
+		location: 'github' | 'graphite'
+		auto_submitted: boolean
+	}
+	userProperties?: undefined
+}
+
 // Merged trackable events type
 export type TrackEventArgs = SettingUpdatedEvent
 	| SettingsResetEvent
@@ -219,7 +236,9 @@ export type TrackEventArgs = SettingUpdatedEvent
 	| MessagesExportedEvent
 	| EmbedLinkRemovedEvent
 	| SkippedAppRedirectEvent
-	| AutoConfirmedEmbedRemovalEvent;
+	| AutoConfirmedEmbedRemovalEvent
+	| PRMessageCopiedEvent
+	| PRMessageSentToSlackEvent;
 
 /**
  * Type-safe event tracking wrapper for PostHog

@@ -1,4 +1,5 @@
-import { loadStorage, settings$ } from '@/utils/store';
+import { sendMessage } from '@/utils/messaging';
+import { featureUsageCounts$, loadStorage, settings$, SlackChannel } from '@/utils/store';
 
 interface PR {
 	url: string
@@ -106,4 +107,66 @@ export const getPRMessage = async ({ platform }: { platform: 'github' | 'graphit
 	await loadStorage();
 	const template = settings$.pr_message_template.get();
 	return formatPRMessage(pr, template);
+};
+
+/**
+ * Handles sending a PR message to a Slack channel with tracking
+ * @param platform - The platform where the action was initiated
+ * @param channel - The Slack channel to send to
+ * @returns true if successful, false if message couldn't be generated
+ */
+export const sendPRMessageToSlack = async ({
+	platform,
+	channel,
+}: {
+	platform: 'github' | 'graphite'
+	channel: SlackChannel
+}): Promise<boolean> => {
+	const message = await getPRMessage({ platform });
+	if (!message) return false;
+
+	// Track feature usage
+	const autoSubmitted = settings$.auto_submit_pr_message.get();
+	featureUsageCounts$.pr_message.set(v => v + 1);
+	sendMessage('trackEvent', {
+		eventName: 'pr_message_sent_to_slack',
+		eventProperties: {
+			location: platform,
+			auto_submitted: autoSubmitted,
+		},
+	});
+
+	await sendMessage('sendSlackMessage', {
+		channel: channel,
+		text: message,
+	});
+
+	return true;
+};
+
+/**
+ * Handles copying a PR message to clipboard with tracking
+ * @param platform - The platform where the action was initiated
+ * @returns true if successful, false if message couldn't be generated
+ */
+export const copyPRMessageToClipboard = async ({
+	platform,
+}: {
+	platform: 'github' | 'graphite'
+}): Promise<boolean> => {
+	const message = await getPRMessage({ platform });
+	if (!message) return false;
+
+	// Track feature usage
+	featureUsageCounts$.pr_message.set(v => v + 1);
+	sendMessage('trackEvent', {
+		eventName: 'pr_message_copied',
+		eventProperties: {
+			location: platform,
+		},
+	});
+
+	await navigator.clipboard.writeText(message);
+
+	return true;
 };

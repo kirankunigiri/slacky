@@ -2,7 +2,6 @@ import 'photoswipe/dist/photoswipe.css';
 
 import { useValue } from '@legendapp/state/react';
 import { Badge, Button, Divider, Space, Text } from '@mantine/core';
-import { List } from '@mantine/core';
 import { IconBrandGithub } from '@tabler/icons-react';
 import ReactDOM from 'react-dom/client';
 import { Gallery, Item } from 'react-photoswipe-gallery';

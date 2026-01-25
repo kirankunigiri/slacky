@@ -43,15 +43,13 @@ export default defineBackground(() => {
 				await browser.windows.update(targetTab.windowId, { focused: true });
 			}
 
-			await waitForTabComplete(targetTab.id);
-
-			// browser.tabs.executeScript()
+			await waitForTabLoad(targetTab.id);
 			await sendMessage('submitSlackMessage', message.data, targetTab.id);
 		}
 	});
 });
 
-async function waitForTabComplete(tabId: number) {
+async function waitForTabLoad(tabId: number) {
 	const tab = await browser.tabs.get(tabId);
 	if (tab.status === 'complete') return;
 
