@@ -72,9 +72,9 @@ export async function openTestSlackChannel(page: Page, name: string) {
 			if (attempt >= maxRetries) throw e;
 		}
 	}
-	const channelSelector = `div.p-channel_sidebar__channel:has-text("${name}")`;
-	await expect(page.locator(channelSelector)).toBeVisible({ timeout: 15000 });
-	await page.locator(channelSelector).click();
+	const channelSelector = page.locator('div.p-channel_sidebar__channel').filter({ hasText: new RegExp(`^${name}$`) });
+	await expect(channelSelector).toBeVisible({ timeout: 15000 });
+	await channelSelector.click();
 	await waitForChannelLoad(page);
 }
 
