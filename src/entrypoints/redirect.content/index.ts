@@ -44,7 +44,7 @@ const findAndOpenBrowserSlackLink = async () => {
 	if (!openSlackLinksInBrowser) return false;
 
 	// Find and open browser link
-	const links = document.querySelectorAll('a.c-link[target="_self"]');
+	const links = document.querySelectorAll('a');
 	for (const link of links) {
 		if (link.getAttribute('href')?.startsWith('/messages/')) {
 			const href = link.getAttribute('href');
