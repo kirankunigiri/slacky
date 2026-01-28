@@ -18,7 +18,7 @@ export function SettingsPageImpl() {
 	if (isPopup) {
 		// Keep size styles synced with popup.css. We use a separate CSS file to ensure the popup size doesn't start at 0 for a few ms while react loads
 		return (
-			<div className="h-[600px]! max-h-[600px]! w-[400px]! min-w-[400px]! overflow-hidden">
+			<div className="h-[600px]! max-h-[600px]! w-[440px]! min-w-[440px]! overflow-hidden">
 				<SettingsPageContent />
 			</div>
 		);
