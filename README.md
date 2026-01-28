@@ -1,7 +1,5 @@
 # slacky
 
-![Playwright Tests](https://github.com/kirankunigiri/slacky/actions/workflows/playwright.yml/badge.svg)
-
 A browser extension with simple improvements for Slack
 
 Have an idea for a new feature? Feel free to open a PR or [create a new issue](https://github.com/kirankunigiri/slacky/issues/new) for a feature request.
@@ -74,6 +72,9 @@ My local testing workflow
 - `bun run setup-test:build` to build after any code changes
 - `bun run setup-test:auth-password` if my Slack login has expired in the playwright browser
 - `bun run test:fast` whenever testing with build + auth ready
+
+Tests used to work fine, but some of the new ones I added break in remote CI but work fine locally. Not bothering to fix that.
+![Playwright Tests](https://github.com/kirankunigiri/slacky/actions/workflows/playwright.yml/badge.svg)
 
 ### Notes
 If there ends up being any new features to add, I would migrate this project over to CRXJS. Saving any content script file takes 5+ seconds to reload with WXT and it's basically unusable for development until [support for ESM](https://github.com/wxt-dev/wxt/issues/357) is added.
