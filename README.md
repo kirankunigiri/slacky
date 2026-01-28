@@ -1,6 +1,16 @@
-# slacky
+# Slacky
 
-A browser extension with simple improvements for Slack
+A browser extension for a better Slack experience on the web
+
+
+
+<img src="https://addons.mozilla.org/user-media/previews/full/348/348040.png" alt="Slacky screenshot 1" width="800" />
+
+<img src="https://addons.mozilla.org/user-media/previews/full/349/349156.png" alt="Slacky screenshot 2" width="800" />
+
+#### Install
+- [Firefox Store](https://addons.mozilla.org/en-US/firefox/addon/slacky/)
+- [Chrome Store](https://chromewebstore.google.com/detail/slacky/hhadgckbkbpkamfjhjjlcemjbkikcngc)
 
 Have an idea for a new feature? Feel free to open a PR or [create a new issue](https://github.com/kirankunigiri/slacky/issues/new) for a feature request.
 
@@ -31,7 +41,7 @@ bun wxt zip -b firefox
 - React + TypeScript
 - Mantine (component library) with the [MantineHub](https://github.com/RubixCube-Innovations/mantine-theme-builder) Shadcn theme with customizations
 - Tailwind
-- @webext-core/proxy-service (messaging between content and background scripts)
+- @webext-core/messaging (communicate between content and background scripts)
 - Playwright (testing)
 
 ---
@@ -56,11 +66,10 @@ Pages
 
 ### 🧪 Tests
 
-This project uses e2e tests with Playwright
+This project uses e2e tests with Playwright. Tests run once a week through GitHub actions to ensure there haven't been any UI changes to Slack that break the extension.
 - Playwright doesn't support browser extension testing for Firefox/Safari, so only chrome is tested
 - Each feature has its own test
 - Tests are unreliable because Slack just may not load sometimes or cause issues with tests. This project's playwright config allows for 2 retries, which is reliable enough to verify if the tests actually work. Tests may be marked as flaky but it's expected.
-- Tests run once a week through GitHub actions to ensure there haven't been any UI changes to Slack that break the extension.
 
 Running tests locally
 - To run tests, setup your env file with the required variables in `tests/test-env.ts`. You need to create a Slack channel, and create a new channel for each test so they can run in parallel - see the test file for the naming scheme
@@ -73,7 +82,8 @@ My local testing workflow
 - `bun run setup-test:auth-password` if my Slack login has expired in the playwright browser
 - `bun run test:fast` whenever testing with build + auth ready
 
-Tests used to work fine, but some of the new ones I added break in remote CI but work fine locally. Not bothering to fix that.
+Tests used to work fine, but some of the new ones I added break in remote CI but work fine locally.
+
 ![Playwright Tests](https://github.com/kirankunigiri/slacky/actions/workflows/playwright.yml/badge.svg)
 
 ### Notes
