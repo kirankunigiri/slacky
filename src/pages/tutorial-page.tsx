@@ -87,7 +87,7 @@ function TutorialPageContent() {
 			{/* Send PR Message */}
 			<Section
 				title="Copy/Send PR Message"
-				description="Add a button to GitHub and Graphite to copy a formatted PR message or automatically send a message to Slack. View available template variables with the info icon tooltip."
+				description="Add a button to GitHub and Graphite to copy a formatted PR message or automatically send a message to Slack. View available template variables with the info icon tooltip. Markdown links are supported."
 				settingName="pr_message"
 			>
 				<PRMessageSettings isTutorialPage />
