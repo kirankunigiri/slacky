@@ -13,7 +13,8 @@ let channelIdCounter = 0;
 const MAX_CHANNELS = 30;
 
 // Valid variable names that can be used in the template
-const VALID_PR_VARIABLES = ['url', 'title', 'linesAdded', 'linesRemoved', 'repo'];
+// Note: 'url' is kept for backward compatibility and maps to 'github_url'
+const VALID_PR_VARIABLES = ['url', 'github_url', 'graphite_url', 'title', 'linesAdded', 'linesRemoved', 'repo'];
 
 /** Validates if a string looks like a valid Slack channel URL */
 const isValidSlackUrl = (url: string): boolean => {
@@ -100,7 +101,8 @@ function PRMessageTemplateEditor() {
 						<div className="p-2 text-xs">
 							<div className="mb-1 font-semibold">Available variables:</div>
 							<ul className="list-inside list-disc space-y-0.5">
-								<li><code>{'{{url}}'}</code> - The full PR URL</li>
+								<li><code>{'{{github_url}}'}</code> - The GitHub PR URL</li>
+								<li><code>{'{{graphite_url}}'}</code> - The Graphite PR URL</li>
 								<li><code>{'{{title}}'}</code> - The PR title</li>
 								<li><code>{'{{linesAdded}}'}</code> - Number of lines added</li>
 								<li><code>{'{{linesRemoved}}'}</code> - Number of lines removed</li>

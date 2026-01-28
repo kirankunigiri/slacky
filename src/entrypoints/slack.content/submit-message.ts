@@ -50,7 +50,14 @@ async function submitSlackMessage() {
 			// Docs: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 			// Replace text with new message
 			document.execCommand('selectAll', false);
-			document.execCommand('insertText', false, message.data.text);
+
+			// Use HTML if provided (for rich text formatting like markdown links)
+			// Otherwise fall back to plain text
+			if (message.data.html) {
+				document.execCommand('insertHTML', false, message.data.html);
+			} else {
+				document.execCommand('insertText', false, message.data.text);
+			}
 
 			// Wait for send button to be enabled, then send
 			if (autoSubmitPrMessage) {

@@ -2,7 +2,8 @@ import { sendMessage } from '@/utils/messaging';
 import { featureUsageCounts$, loadStorage, settings$, SlackChannel } from '@/utils/store';
 
 interface PR {
-	url: string
+	github_url: string
+	graphite_url: string
 	title: string
 	linesAdded: number
 	linesRemoved: number
@@ -14,10 +15,33 @@ interface PR {
  */
 const formatPRMessage = (pr: PR, template: string): string => {
 	return template.replace(/\{\{(\w+)\}\}/g, (match, variableName) => {
+		// Handle backward compatibility: map 'url' to 'github_url'
+		const key = variableName === 'url' ? 'github_url' : variableName;
+
 		// Access the property from the PR object
-		const value = pr[variableName as keyof PR];
+		const value = pr[key as keyof PR];
 		return value !== undefined ? String(value) : match;
 	});
+};
+
+/**
+ * Constructs a Graphite URL from GitHub PR information
+ * @param repo - Repository in format "owner/repo"
+ * @param prNumber - PR number
+ * @returns Graphite PR URL
+ */
+const constructGraphiteUrl = (repo: string, prNumber: number): string => {
+	return `https://app.graphite.com/github/pr/${repo}/${prNumber}`;
+};
+
+/**
+ * Constructs a GitHub URL from repository and PR number
+ * @param repo - Repository in format "owner/repo"
+ * @param prNumber - PR number
+ * @returns GitHub PR URL
+ */
+const constructGithubUrl = (repo: string, prNumber: number): string => {
+	return `https://github.com/${repo}/pull/${prNumber}`;
 };
 
 const getPRFromGitHub = async (): Promise<PR | null> => {
@@ -25,7 +49,7 @@ const getPRFromGitHub = async (): Promise<PR | null> => {
 	const url = window.location.href;
 
 	// Validate it's a GitHub PR URL (format: https://github.com/owner/repo/pull/number)
-	const prUrlPattern = /^https:\/\/github\.com\/([^/]+\/[^/]+)\/pull\/\d+/;
+	const prUrlPattern = /^https:\/\/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/;
 	const match = url.match(prUrlPattern);
 
 	if (!match) {
@@ -33,8 +57,9 @@ const getPRFromGitHub = async (): Promise<PR | null> => {
 		return null;
 	}
 
-	// Extract repo name (owner/repo)
+	// Extract repo name (owner/repo) and PR number
 	const repo = match[1];
+	const prNumber = parseInt(match[2], 10);
 
 	// Extract PR name using query selector
 	const prTitleElement = document.querySelector('.js-issue-title');
@@ -51,8 +76,13 @@ const getPRFromGitHub = async (): Promise<PR | null> => {
 	const linesAdded = addedMatch ? parseInt(addedMatch[1], 10) : 0;
 	const linesRemoved = removedMatch ? parseInt(removedMatch[1], 10) : 0;
 
+	// Construct both URLs
+	const github_url = constructGithubUrl(repo, prNumber);
+	const graphite_url = constructGraphiteUrl(repo, prNumber);
+
 	return {
-		url,
+		github_url,
+		graphite_url,
 		title,
 		linesAdded,
 		linesRemoved,
@@ -65,7 +95,7 @@ const getPRFromGraphite = async (): Promise<PR | null> => {
 	const url = window.location.href;
 
 	// Validate it's a Graphite PR URL (format: https://app.graphite.com/github/pr/owner/repo/number/...)
-	const prUrlPattern = /^https:\/\/app\.graphite\.com\/github\/pr\/([^/]+\/[^/]+)\/\d+/;
+	const prUrlPattern = /^https:\/\/app\.graphite\.com\/github\/pr\/([^/]+\/[^/]+)\/(\d+)/;
 	const match = url.match(prUrlPattern);
 
 	if (!match) {
@@ -73,8 +103,9 @@ const getPRFromGraphite = async (): Promise<PR | null> => {
 		return null;
 	}
 
-	// Extract repo name (owner/repo)
+	// Extract repo name (owner/repo) and PR number
 	const repo = match[1];
+	const prNumber = parseInt(match[2], 10);
 
 	const titleElement = document.querySelector('[class*="TextareaWithInlineEdit_editButton"]');
 	if (!titleElement) return null;
@@ -91,8 +122,13 @@ const getPRFromGraphite = async (): Promise<PR | null> => {
 	const linesRemovedText = linesRemovedElement.textContent?.trim() || '0';
 	const linesRemoved = parseInt(linesRemovedText.replace(/\D/g, ''), 10);
 
+	// Construct both URLs
+	const github_url = constructGithubUrl(repo, prNumber);
+	const graphite_url = constructGraphiteUrl(repo, prNumber);
+
 	return {
-		url,
+		github_url,
+		graphite_url,
 		title: titleElement.textContent?.trim(),
 		linesAdded,
 		linesRemoved,
@@ -110,6 +146,19 @@ export const getPRMessage = async ({ platform }: { platform: 'github' | 'graphit
 };
 
 /**
+ * Gets both plain text and HTML versions of the PR message
+ * @param platform - The platform where the PR is located
+ * @returns Object with text and html versions, or undefined if PR not found
+ */
+export const getPRMessageWithHTML = async ({ platform }: { platform: 'github' | 'graphite' }) => {
+	const message = await getPRMessage({ platform });
+	if (!message) return;
+
+	const html = markdownToHtml(message);
+	return { text: message, html };
+};
+
+/**
  * Handles sending a PR message to a Slack channel with tracking
  * @param platform - The platform where the action was initiated
  * @param channel - The Slack channel to send to
@@ -122,8 +171,8 @@ export const sendPRMessageToSlack = async ({
 	platform: 'github' | 'graphite'
 	channel: SlackChannel
 }): Promise<boolean> => {
-	const message = await getPRMessage({ platform });
-	if (!message) return false;
+	const messageData = await getPRMessageWithHTML({ platform });
+	if (!messageData) return false;
 
 	// Track feature usage
 	const autoSubmitted = settings$.auto_submit_pr_message.get();
@@ -138,10 +187,21 @@ export const sendPRMessageToSlack = async ({
 
 	await sendMessage('sendSlackMessage', {
 		channel: channel,
-		text: message,
+		text: messageData.text,
+		html: messageData.html,
 	});
 
 	return true;
+};
+
+/**
+ * Converts markdown links to HTML
+ * @param text - Text containing markdown links like [text](url)
+ * @returns HTML string with <a> tags
+ */
+const markdownToHtml = (text: string): string => {
+	// Convert markdown links [text](url) to HTML <a href="url">text</a>
+	return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 };
 
 /**
@@ -166,7 +226,17 @@ export const copyPRMessageToClipboard = async ({
 		},
 	});
 
-	await navigator.clipboard.writeText(message);
+	// Convert markdown to HTML for rich text support in Slack
+	const htmlMessage = markdownToHtml(message);
+
+	// Write both plain text and HTML to clipboard
+	// This allows apps like Slack to use the formatted version
+	const clipboardItem = new ClipboardItem({
+		'text/plain': new Blob([message], { type: 'text/plain' }),
+		'text/html': new Blob([htmlMessage], { type: 'text/html' }),
+	});
+
+	await navigator.clipboard.write([clipboardItem]);
 
 	return true;
 };

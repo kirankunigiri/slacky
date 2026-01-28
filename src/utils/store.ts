@@ -12,7 +12,7 @@ export interface SlackChannel {
 }
 
 // Default template string used in PR messages
-export const DEFAULT_PR_TEMPLATE = '{{url}} - {{title}} (+{{linesAdded}} / -{{linesRemoved}})';
+export const DEFAULT_PR_TEMPLATE = '{{github_url}} - {{title}} (+{{linesAdded}} / -{{linesRemoved}})';
 
 /** Settings stored in Chrome storage */
 export interface Settings {

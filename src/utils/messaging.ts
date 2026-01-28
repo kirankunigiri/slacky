@@ -7,6 +7,7 @@ import type { SlackChannel } from '@/utils/store';
 
 interface SlackMessageData {
 	text: string
+	html?: string // Optional HTML version for rich formatting
 	channel: SlackChannel
 }
 

@@ -40,7 +40,7 @@ export default defineConfig({
 			: undefined;
 
 		return {
-			version: '1.0',
+			version: '1.1.1',
 			permissions: ['storage', 'tabs'],
 			content_security_policy: {
 				extension_pages: extensionPagesCsp,
