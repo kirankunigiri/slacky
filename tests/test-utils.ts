@@ -1,5 +1,7 @@
 import { BrowserContext, expect, Page } from '@playwright/test';
 
+import { DISABLE_EXPORT_MESSAGES } from '@/utils/constants';
+
 export async function deleteAllMessages(page: Page) {
 	let messageCount = await page.locator('.c-message_kit__message').count();
 	while (messageCount > 0) {
@@ -98,7 +100,7 @@ export async function verifyUsageCount(
 	await tutorialPage.waitForTimeout(500);
 
 	// Define all trackable features
-	const allFeatures = ['remove_embeds', 'auto_confirm_embed_removal', 'open_slack_links_in_browser', 'message_export_format', 'pr_message'];
+	const allFeatures = ['remove_embeds', 'auto_confirm_embed_removal', 'open_slack_links_in_browser', ...(DISABLE_EXPORT_MESSAGES ? [] : ['message_export_format']), 'pr_message'];
 
 	for (const feature of allFeatures) {
 		const badgeSelector = `[data-qa="usage-badge-${feature}"]`;

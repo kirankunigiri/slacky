@@ -15,6 +15,7 @@ import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, Setting
 import PRMessageSettings from '@/components/settings/pr-message';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
+import { DISABLE_EXPORT_MESSAGES } from '@/utils/constants';
 import { FeatureUsageCounts, featureUsageCounts$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
 
@@ -71,18 +72,20 @@ function TutorialPageContent() {
 			</Section>
 
 			{/* Message Export */}
-			<Section
-				title="Message Export"
-				description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard or download a markdown file."
-				settingName="message_export_format"
-			>
-				<div className="flex max-w-[200px] flex-col gap-1.5">
-					<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
-					<MessageExportSettings />
-				</div>
-				<Space h="md" />
-				<LightboxImage src="https://i.imgur.com/BuHZCKG.png" width={1450} height={270} />
-			</Section>
+			{!DISABLE_EXPORT_MESSAGES && (
+				<Section
+					title="Message Export"
+					description="A copy button will appear in the top right corner of any Slack channel or thread. Clicking it will copy all messages to the clipboard or download a markdown file."
+					settingName="message_export_format"
+				>
+					<div className="flex max-w-[200px] flex-col gap-1.5">
+						<Text size="sm" c="dimmed" fw="bold">Export Format</Text>
+						<MessageExportSettings />
+					</div>
+					<Space h="md" />
+					<LightboxImage src="https://i.imgur.com/BuHZCKG.png" width={1450} height={270} />
+				</Section>
+			)}
 
 			{/* Send PR Message */}
 			<Section

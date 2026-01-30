@@ -2,6 +2,7 @@ import ExportMessagesButton from '@/entrypoints/slack.content/export-btn';
 import removeEmbeds from '@/entrypoints/slack.content/remove-embeds';
 import SettingsButton from '@/entrypoints/slack.content/settings-btn';
 import submitSlackMessage from '@/entrypoints/slack.content/submit-message';
+import { DISABLE_EXPORT_MESSAGES } from '@/utils/constants';
 import { injectComponent } from '@/utils/injector';
 import { defineContentScript } from '#imports';
 
@@ -15,19 +16,21 @@ export default defineContentScript({
 		submitSlackMessage();
 
 		// Export buttons
-		injectComponent({
-			parentSelector: '.p-view_header__actions',
-			componentId: 'slacky-export-channel-messages',
-			Component: () => <ExportMessagesButton type="channel" />,
-			position: 'child-first',
-		});
+		if (!DISABLE_EXPORT_MESSAGES) {
+			injectComponent({
+				parentSelector: '.p-view_header__actions',
+				componentId: 'slacky-export-channel-messages',
+				Component: () => <ExportMessagesButton type="channel" />,
+				position: 'child-first',
+			});
 
-		injectComponent({
-			parentSelector: '[data-qa="secondary-header-more"]',
-			componentId: 'slacky-export-thread-messages',
-			Component: () => <ExportMessagesButton type="thread" />,
-			position: 'sibling-before',
-		});
+			injectComponent({
+				parentSelector: '[data-qa="secondary-header-more"]',
+				componentId: 'slacky-export-thread-messages',
+				Component: () => <ExportMessagesButton type="thread" />,
+				position: 'sibling-before',
+			});
+		}
 
 		// Settings button
 		injectComponent({

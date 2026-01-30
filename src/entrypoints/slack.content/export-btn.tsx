@@ -3,7 +3,7 @@ import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { exportMessages, ExportMessagesOptions } from '@/entrypoints/slack.content/export';
-import { COPY_BTN_RESET_DELAY } from '@/utils/constants';
+import { COPY_BTN_RESET_DELAY, DISABLE_EXPORT_MESSAGES } from '@/utils/constants';
 import { settings$ } from '@/utils/store';
 import { withStorageLoaded } from '@/utils/utils';
 
@@ -15,7 +15,7 @@ function ExportMessagesButton({ type }: Pick<ExportMessagesOptions, 'type'>) {
 	const messageExportFormat = useValue(settings$.message_export_format);
 	const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied'>('idle');
 
-	if (messageExportFormat === 'disabled') return null;
+	if (DISABLE_EXPORT_MESSAGES || messageExportFormat === 'disabled') return null;
 
 	const handleClick = async () => {
 		if (copyState === 'copying') return;

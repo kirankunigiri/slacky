@@ -9,7 +9,7 @@ import { SettingAutoConfirmEmbedRemoval, SettingOpenSlackLinksInBrowser, Setting
 import PRMessageSettings from '@/components/settings/pr-message';
 import { BaseApp } from '@/pages/base-app';
 import { trackEvent } from '@/utils/analytics';
-import { EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
+import { DISABLE_EXPORT_MESSAGES, EMBEDDED_SETTINGS_MODAL_SIZE } from '@/utils/constants';
 import { withStorageLoaded } from '@/utils/utils';
 import { browser } from '#imports';
 
@@ -77,10 +77,14 @@ function SettingsPageContent() {
 						<Space h="sm" />
 						<GeneralSettings />
 
-						<p className="text-base font-medium">Message Export Format</p>
-						<Space h="xs" />
-						<MessageExportSettings />
-						<Space h="xs" />
+						{!DISABLE_EXPORT_MESSAGES && (
+							<>
+								<p className="text-base font-medium">Message Export Format</p>
+								<Space h="xs" />
+								<MessageExportSettings />
+								<Space h="xs" />
+							</>
+						)}
 
 						{/* Send PR Message */}
 						<Space h="md" />
@@ -142,7 +146,7 @@ function GeneralSettings() {
 					<SettingOpenSlackLinksInBrowser />
 					<SettingAutoConfirmEmbedRemoval />
 					<SettingShowSettingsButtonInSlack />
-					<Space h="xs" />
+					{/* <Space h="xs" /> */}
 				</div>
 			</div>
 		</div>

@@ -1,3 +1,5 @@
+import { DISABLE_EXPORT_MESSAGES } from '@/utils/constants';
+
 import { expect, test } from './fixtures';
 import { deleteAllMessages, deleteLastMessage, getTestMessageLink, openTestSlackChannel, postMessageWithLink, verifyUsageCount, waitForChannelLoad } from './test-utils';
 
@@ -332,6 +334,7 @@ test('open_slack_links_in_browser: auto-redirect', async ({ context, page, exten
 // TODO: Read delete messages, insert messages, verify clipboard/file contents matches, test export with thread
 // =============================================================================
 test('message_export_format: export functionality', async ({ context, page, extensionId }) => {
+	test.skip(DISABLE_EXPORT_MESSAGES, 'Export messages feature is disabled');
 	// Go to Slack and open test channel
 	await openTestSlackChannel(page, TEST_CHANNELS.test5);
 
